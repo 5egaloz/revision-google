@@ -50,6 +50,9 @@
   .pasos span{font-size:1rem;line-height:1.5}
 
   form{margin-top:34px;display:flex;flex-direction:column;gap:18px}
+  /* El display:flex de arriba le gana al atributo hidden, y el formulario se
+     quedaba a la vista despues de enviar, con el boton en "Enviando...". */
+  form[hidden]{display:none}
   label{display:flex;flex-direction:column;gap:7px}
   .rot{
     font-family:ui-monospace,Consolas,monospace;font-size:.76rem;
