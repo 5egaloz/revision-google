@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Tu negocio aparece en Google? — Becker.IA</title>
+<meta name="description" content="Te reviso gratis cómo aparece tu negocio cuando alguien lo busca en Google, y te mando el resultado por WhatsApp. Coyhaique.">
+<style>
+  :root{
+    --papel:#f3ede2;
+    --papel-2:#e6dece;
+    --tinta:#211d17;
+    --tinta-2:#4a443a;
+    --tinta-3:#6f6759;
+    --terracota:#c05621;
+    --verde:#3f6b45;
+    --linea:#d3c9b6;
+    --blanco:#fbf8f2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--papel);color:var(--tinta);
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    font-size:20px;line-height:1.6;-webkit-text-size-adjust:100%;
+  }
+  .env{max-width:34rem;margin:0 auto;padding:0 22px 64px}
+
+  header{padding:42px 0 8px}
+  .marca{
+    font-family:ui-monospace,Consolas,monospace;font-size:.78rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-2);
+  }
+  h1{
+    font-size:2.3rem;line-height:1.1;letter-spacing:-.02em;font-weight:750;
+    margin:20px 0 0;text-wrap:balance;
+  }
+  h1 em{font-style:normal;color:var(--terracota)}
+  .bajada{margin-top:18px;font-size:1.1rem;color:var(--tinta-2)}
+
+  .pasos{
+    list-style:none;margin:32px 0 0;padding:22px 24px;
+    background:var(--blanco);border:1px solid var(--linea);border-radius:3px;
+    display:flex;flex-direction:column;gap:16px;
+  }
+  .pasos li{display:grid;grid-template-columns:2rem 1fr;gap:14px;align-items:start}
+  .pasos b{
+    font-family:ui-monospace,Consolas,monospace;font-size:.95rem;
+    color:var(--terracota);font-weight:700;line-height:1.6;
+  }
+  .pasos span{font-size:1rem;line-height:1.5}
+
+  form{margin-top:34px;display:flex;flex-direction:column;gap:18px}
+  label{display:flex;flex-direction:column;gap:7px}
+  .rot{
+    font-family:ui-monospace,Consolas,monospace;font-size:.76rem;
+    letter-spacing:.11em;text-transform:uppercase;color:#3a3a38;font-weight:600;
+  }
+  .rot small{text-transform:none;letter-spacing:0;color:var(--tinta-3);font-weight:400}
+  input,textarea{
+    font-family:inherit;font-size:1.05rem;color:var(--tinta);
+    background:var(--blanco);border:1.5px solid var(--linea);border-radius:3px;
+    padding:14px 15px;width:100%;
+  }
+  input:focus,textarea:focus{outline:3px solid var(--verde);outline-offset:1px;border-color:var(--verde)}
+  textarea{resize:vertical;min-height:88px}
+
+  button{
+    font-family:ui-monospace,Consolas,monospace;font-size:.9rem;
+    letter-spacing:.09em;text-transform:uppercase;font-weight:700;
+    background:var(--terracota);color:#fff;border:none;border-radius:3px;
+    padding:19px 22px;cursor:pointer;width:100%;
+  }
+  button:hover:not(:disabled){background:#a4451a}
+  button:disabled{opacity:.55;cursor:default}
+
+  .aviso{
+    margin-top:16px;padding:15px 17px;border-radius:3px;font-size:.98rem;
+    border-left:4px solid var(--terracota);background:#f7e6dc;color:#7a3410;
+  }
+  .aviso[hidden]{display:none}
+
+  .listo{
+    margin-top:26px;padding:26px 24px;border-radius:3px;
+    background:var(--blanco);border:1px solid var(--verde);border-left:5px solid var(--verde);
+  }
+  .listo[hidden]{display:none}
+  .listo h2{font-size:1.4rem;line-height:1.2;margin-bottom:12px}
+  .listo p{color:var(--tinta-2);font-size:1rem}
+  .listo a{
+    display:inline-block;margin-top:18px;background:var(--verde);color:#fff;
+    text-decoration:none;font-family:ui-monospace,Consolas,monospace;font-size:.85rem;
+    letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:15px 20px;border-radius:3px;
+  }
+
+  .letra-chica{margin-top:26px;font-size:.92rem;color:var(--tinta-3)}
+
+  footer{
+    margin-top:44px;padding-top:20px;border-top:1px solid var(--linea);
+    font-family:ui-monospace,Consolas,monospace;font-size:.76rem;color:var(--tinta-3);
+    display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  }
+  footer a{color:var(--tinta-3)}
+
+  @media (max-width:520px){ h1{font-size:1.95rem} .env{padding:0 18px 56px} }
+</style>
+</head>
+<body>
+<div class="env">
+
+  <header>
+    <div class="marca">Becker.IA · Coyhaique</div>
+    <h1>¿Tu negocio aparece cuando alguien lo <em>busca en Google</em>?</h1>
+    <p class="bajada">Te lo reviso yo, gratis, y te mando el resultado por WhatsApp. No es un
+      robot: lo miro a mano y te digo qué te falta.</p>
+  </header>
+
+  <ol class="pasos">
+    <li><b>01</b><span>Dejas el nombre de tu negocio y tu WhatsApp acá abajo.</span></li>
+    <li><b>02</b><span>Busco tu negocio como lo buscaría un cliente: en Google, en el mapa y en el celular.</span></li>
+    <li><b>03</b><span>Te mando lo que encontré y lo que te falta, en palabras simples.</span></li>
+  </ol>
+
+  <form id="form" novalidate>
+    <label>
+      <span class="rot">Nombre del negocio</span>
+      <input id="negocio" name="negocio" type="text" autocomplete="organization" maxlength="80" required>
+    </label>
+
+    <label>
+      <span class="rot">A qué se dedica <small>— opcional</small></span>
+      <input id="rubro" name="rubro" type="text" maxlength="60" placeholder="frutería, carnicería, taller…">
+    </label>
+
+    <label>
+      <span class="rot">Tu WhatsApp</span>
+      <input id="whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="9 1234 5678" required>
+    </label>
+
+    <label>
+      <span class="rot">Tu nombre <small>— opcional</small></span>
+      <input id="contacto" name="contacto" type="text" autocomplete="name" maxlength="60">
+    </label>
+
+    <label>
+      <span class="rot">Algo que quieras contarme <small>— opcional</small></span>
+      <textarea id="notas" name="notas" maxlength="300"></textarea>
+    </label>
+
+    <button id="enviar" type="submit">Revísalo gratis</button>
+    <div class="aviso" id="aviso" hidden></div>
+  </form>
+
+  <div class="listo" id="listo" hidden>
+    <h2>Listo, lo tengo.</h2>
+    <p id="listoTexto"></p>
+    <a id="waDirecto" href="#" target="_blank" rel="noopener">Escribirme ahora por WhatsApp</a>
+  </div>
+
+  <p class="letra-chica">Tus datos los uso solo para contestarte esto. No los comparto con nadie
+    y no te voy a llenar de mensajes.</p>
+
+  <footer>
+    <span>Becker.IA · Fernando Becker</span>
+    <span><a href="https://instagram.com/bbecker.ia" target="_blank" rel="noopener">@bbecker.ia</a></span>
+  </footer>
+</div>
+
+<script>
+/* ===== EDITAR ACÁ ===== */
+const CONFIG = {
+  api:      'https://n8n.146-181-46-2.sslip.io/webhook/revision-google',
+  whatsapp: '56953910713',   // el de Fer, sin + ni espacios
+  origen:   'instagram',     // cambia a 'facebook' si publicas otro link
+};
+/* ====================== */
+
+const $ = (id) => document.getElementById(id);
+const form = $('form');
+const aviso = $('aviso');
+
+function mostrarAviso(texto) {
+  aviso.textContent = texto;
+  aviso.hidden = false;
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  aviso.hidden = true;
+
+  const datos = {
+    negocio:  $('negocio').value.trim(),
+    rubro:    $('rubro').value.trim(),
+    whatsapp: $('whatsapp').value.trim(),
+    contacto: $('contacto').value.trim(),
+    notas:    $('notas').value.trim(),
+    origen:   CONFIG.origen,
+  };
+
+  // Se revisa acá también para no hacerlo ir y volver por algo obvio.
+  if (!datos.negocio) { mostrarAviso('Me falta el nombre de tu negocio.'); $('negocio').focus(); return; }
+  if (datos.whatsapp.replace(/[^0-9]/g, '').length < 8) {
+    mostrarAviso('Ese WhatsApp no me sirve para escribirte. Revísalo.'); $('whatsapp').focus(); return;
+  }
+
+  const boton = $('enviar');
+  boton.disabled = true;
+  boton.textContent = 'Enviando…';
+
+  try {
+    const r = await fetch(CONFIG.api, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(datos),
+    });
+    const j = await r.json().catch(() => ({}));
+
+    if (!r.ok || j.ok === false) {
+      boton.disabled = false;
+      boton.textContent = 'Revísalo gratis';
+      mostrarAviso(j.motivo || 'No se pudo enviar. Escríbeme por WhatsApp y lo vemos al tiro.');
+      return;
+    }
+    listo(datos);
+  } catch (err) {
+    // Si se cae internet o el servidor, el contacto no se pierde: se va por WhatsApp.
+    boton.disabled = false;
+    boton.textContent = 'Revísalo gratis';
+    mostrarAviso('No pude enviarlo desde acá. Apreta el botón verde y me llega por WhatsApp.');
+    prepararWhatsApp(datos);
+    $('listo').hidden = false;
+    $('listoTexto').textContent = 'Mándame el mensaje que ya te dejé escrito y lo reviso igual.';
+  }
+});
+
+function prepararWhatsApp(datos) {
+  const txt = 'Hola Fernando, quiero que revises cómo aparece mi negocio en Google.\n\n' +
+    'Negocio: ' + datos.negocio + (datos.rubro ? '\nRubro: ' + datos.rubro : '') +
+    (datos.notas ? '\n\n' + datos.notas : '');
+  $('waDirecto').href = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(txt);
+}
+
+function listo(datos) {
+  prepararWhatsApp(datos);
+  form.hidden = true;
+  $('listoTexto').textContent = 'Voy a revisar ' + datos.negocio +
+    ' y te escribo por WhatsApp con lo que encuentre. Si quieres apurarlo, escríbeme tú.';
+  $('listo').hidden = false;
+  $('listo').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+</script>
+</body>
+</html>
