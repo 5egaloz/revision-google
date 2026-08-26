@@ -1,4 +1,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+/* Pinta la paleta antes de que el navegador dibuje, para que no se vea el
+   destello de la paleta anterior al cargar. */
+(function(){
+  var p = "noche";
+  try{ p = localStorage.getItem("automotora_paleta") || "noche"; }catch(e){}
+  if(p !== "ripio") document.documentElement.dataset.paleta = p;
+})();
+</script>
 <title>Automotora Cordillera</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,6 +30,8 @@
   --senal-tinta:#FFFFFF;
   --senal-suave:#F3DED4;
   --sombra:rgba(22,21,15,.13);
+  --monta:#F1EFE9;
+  --monta-linea:#C9C4B8;
 
   --titular:"Big Shoulders Display","Oswald","Arial Narrow",sans-serif;
   --texto:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -30,10 +41,10 @@
 /* ── Paletas alternativas. Cada una es una decisión cerrada de marca, así que
    no responde al tema del sistema: una automotora elige UN color, no dos. ── */
 :root[data-paleta="noche"]{
-  --papel:#0F0E0C; --placa:#1A1815; --placa-2:#262320;
-  --tinta:#F2EFE7; --grafito:#A8A192; --filete:#3A352D; --filete-2:#2A2620;
-  --senal:#E0A93C; --senal-tinta:#1A1409; --senal-suave:#33280F;
-  --sombra:rgba(0,0,0,.5);
+  --papel:#0D0C0A; --placa:#181613; --placa-2:#25221D;
+  --tinta:#F4F1E8; --grafito:#ADA595; --filete:#3D372D; --filete-2:#2B271F;
+  --senal:#E4AC3B; --senal-tinta:#17110A; --senal-suave:#35290E;
+  --sombra:rgba(0,0,0,.55);
 }
 :root[data-paleta="taller"]{
   --papel:#0C1A21; --placa:#13262F; --placa-2:#1D343E;
@@ -225,13 +236,13 @@ input,select{font:inherit;color:inherit}
 }
 
 /* marco técnico con marcas de registro en las esquinas */
-.lote-foto{position:relative;padding:9px;background:var(--placa)}
+.lote-foto{position:relative;padding:10px;background:var(--monta)}
 .lote-foto::before,.lote-foto::after{
   content:"";position:absolute;width:16px;height:16px;border:2px solid var(--senal);
 }
 .lote-foto::before{top:0;left:0;border-right:none;border-bottom:none}
 .lote-foto::after{bottom:0;right:0;border-left:none;border-top:none}
-.lote-foto img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#fff}
+.lote-foto img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#fff;border:1px solid var(--monta-linea)}
 .sinfoto{
   aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;
   background:var(--placa-2);color:var(--grafito);
@@ -287,8 +298,8 @@ input,select{font:inherit;color:inherit}
 .velo{position:fixed;inset:0;background:rgba(12,11,7,.8);z-index:60;display:none;padding:16px;overflow-y:auto}
 .velo.on{display:block}
 .ficha{background:var(--papel);border:3px solid var(--tinta);max-width:680px;margin:16px auto}
-.ficha-foto{position:relative;padding:12px;background:var(--placa);border-bottom:3px solid var(--tinta)}
-.ficha-foto img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#fff}
+.ficha-foto{position:relative;padding:13px;background:var(--monta);border-bottom:3px solid var(--tinta)}
+.ficha-foto img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#fff;border:1px solid var(--monta-linea)}
 .ficha-cuerpo{padding:26px;display:flex;flex-direction:column;gap:22px}
 .ficha-tit{font-family:var(--titular);font-weight:800;font-size:clamp(2rem,6vw,2.9rem);line-height:.92;text-transform:uppercase;margin:0}
 .ficha-precio{font-family:var(--titular);font-weight:800;font-size:clamp(2.6rem,8vw,3.8rem);line-height:.85;color:var(--senal);font-variant-numeric:tabular-nums;margin-top:8px}
@@ -465,8 +476,8 @@ tr:last-child td{border-bottom:none}
   <div class="wrap barra-in">
     <span class="barra-l">Demo · elija la paleta</span>
     <div class="paletas" id="paletas">
-      <button class="sw" data-p="ripio"  aria-pressed="true"  title="Ripio"><i style="background:#E3E1DA"></i><i style="background:#C43F14"></i><span>Ripio</span></button>
-      <button class="sw" data-p="noche"  aria-pressed="false" title="Noche"><i style="background:#0F0E0C"></i><i style="background:#E0A93C"></i><span>Noche</span></button>
+      <button class="sw" data-p="ripio"  aria-pressed="false"  title="Ripio"><i style="background:#E3E1DA"></i><i style="background:#C43F14"></i><span>Ripio</span></button>
+      <button class="sw" data-p="noche"  aria-pressed="true" title="Noche"><i style="background:#0F0E0C"></i><i style="background:#E0A93C"></i><span>Noche</span></button>
       <button class="sw" data-p="taller" aria-pressed="false" title="Taller"><i style="background:#0C1A21"></i><i style="background:#E8402F"></i><span>Taller</span></button>
       <button class="sw" data-p="nieve"  aria-pressed="false" title="Nieve"><i style="background:#EDF0F4"></i><i style="background:#1B4FD8"></i><span>Nieve</span></button>
     </div>
@@ -846,19 +857,21 @@ document.getElementById("btnBuscado").addEventListener("click", e => {
 
 /* ═══════════ PALETA ═══════════ */
 const LLAVE_P = "automotora_paleta";
+const PALETA_BASE = "noche";   // la que eligió Fer
 function aplicarPaleta(p){
-  if(p && p !== "ripio") document.documentElement.dataset.paleta = p;
+  p = p || PALETA_BASE;
+  if(p !== "ripio") document.documentElement.dataset.paleta = p;
   else delete document.documentElement.dataset.paleta;
   document.querySelectorAll("#paletas .sw").forEach(b =>
-    b.setAttribute("aria-pressed", String(b.dataset.p === (p || "ripio"))));
-  try{ localStorage.setItem(LLAVE_P, p || "ripio"); }catch(e){}
+    b.setAttribute("aria-pressed", String(b.dataset.p === p)));
+  try{ localStorage.setItem(LLAVE_P, p); }catch(e){}
 }
 document.getElementById("paletas").addEventListener("click", e => {
   const b = e.target.closest(".sw");
   if(b) aplicarPaleta(b.dataset.p);
 });
-let paletaGuardada = "ripio";
-try{ paletaGuardada = localStorage.getItem(LLAVE_P) || "ripio"; }catch(e){}
+let paletaGuardada = PALETA_BASE;
+try{ paletaGuardada = localStorage.getItem(LLAVE_P) || PALETA_BASE; }catch(e){}
 aplicarPaleta(paletaGuardada);
 
 /* ═══════════ MOVIMIENTO ═══════════
