@@ -24,10 +24,32 @@
 
   --titular:"Big Shoulders Display","Oswald","Arial Narrow",sans-serif;
   --texto:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --e:cubic-bezier(.16,1,.3,1);
   --dato:"Roboto Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
+/* ── Paletas alternativas. Cada una es una decisión cerrada de marca, así que
+   no responde al tema del sistema: una automotora elige UN color, no dos. ── */
+:root[data-paleta="noche"]{
+  --papel:#0F0E0C; --placa:#1A1815; --placa-2:#262320;
+  --tinta:#F2EFE7; --grafito:#A8A192; --filete:#3A352D; --filete-2:#2A2620;
+  --senal:#E0A93C; --senal-tinta:#1A1409; --senal-suave:#33280F;
+  --sombra:rgba(0,0,0,.5);
+}
+:root[data-paleta="taller"]{
+  --papel:#0C1A21; --placa:#13262F; --placa-2:#1D343E;
+  --tinta:#EAF2F4; --grafito:#93ABB4; --filete:#2A4551; --filete-2:#1E343E;
+  --senal:#E8402F; --senal-tinta:#FFFFFF; --senal-suave:#3D150F;
+  --sombra:rgba(0,0,0,.5);
+}
+:root[data-paleta="nieve"]{
+  --papel:#EDF0F4; --placa:#FFFFFF; --placa-2:#DCE2E9;
+  --tinta:#0D1520; --grafito:#47525F; --filete:#BEC7D2; --filete-2:#D2D9E2;
+  --senal:#1B4FD8; --senal-tinta:#FFFFFF; --senal-suave:#DCE3FA;
+  --sombra:rgba(13,21,32,.14);
+}
+
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
+  :root:not([data-theme="light"]):not([data-paleta]){
     --papel:#14130E;
     --placa:#1E1C16;
     --placa-2:#2A2820;
@@ -41,7 +63,7 @@
     --sombra:rgba(0,0,0,.45);
   }
 }
-:root[data-theme="dark"]{
+:root[data-theme="dark"]:not([data-paleta]){
   --papel:#14130E;
   --placa:#1E1C16;
   --placa-2:#2A2820;
@@ -91,6 +113,32 @@ input,select{font:inherit;color:inherit}
   font-family:var(--dato);font-size:.8rem;font-weight:700;
   letter-spacing:.14em;text-transform:uppercase;padding:6px 11px;
 }
+
+/* ═══════════ BARRA DE DEMO ═══════════ */
+.barra-demo{background:var(--placa);border-bottom:1px solid var(--filete)}
+.barra-in{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:12px 20px}
+.barra-l{font-family:var(--dato);font-size:.8rem;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--grafito)}
+.paletas{display:flex;flex-wrap:wrap;gap:8px}
+.sw{
+  display:flex;align-items:center;gap:7px;padding:7px 12px 7px 8px;
+  border:2px solid var(--filete);
+  font-family:var(--dato);font-size:.85rem;font-weight:500;color:var(--grafito);
+  transition:border-color .3s var(--e),color .3s;
+}
+.sw i{width:14px;height:14px;display:block;border:1px solid rgba(128,128,128,.45)}
+.sw:hover{border-color:var(--grafito);color:var(--tinta)}
+.sw[aria-pressed="true"]{border-color:var(--senal);color:var(--tinta);font-weight:700}
+.mov-btn{
+  margin-left:auto;font-family:var(--dato);font-size:.85rem;font-weight:500;
+  color:var(--grafito);border:2px solid var(--filete);padding:8px 13px;
+  transition:all .3s var(--e);
+}
+.mov-btn:hover{border-color:var(--grafito);color:var(--tinta)}
+.mov-btn b{color:var(--senal)}
+.mov-aviso{
+  margin:0;padding:0 0 12px;font-size:.95rem;color:var(--grafito);max-width:70ch;
+}
+.mov-aviso:empty{display:none}
 
 /* ═══════════ PORTADA ═══════════ */
 .hero{padding:60px 0 0}
@@ -144,7 +192,7 @@ input,select{font:inherit;color:inherit}
   display:grid;gap:20px;width:100%;text-align:left;
   grid-template-columns:1fr;
   padding:30px 0 34px;border-bottom:1px solid var(--filete);
-  transition:background .35s cubic-bezier(.16,1,.3,1);
+  transition:background .35s var(--e);
 }
 .lote:hover{background:var(--placa)}
 @media (min-width:900px){
@@ -240,7 +288,7 @@ input,select{font:inherit;color:inherit}
   letter-spacing:.08em;text-transform:uppercase;
   padding:15px 24px;background:var(--senal);color:var(--senal-tinta);
   border:2px solid var(--senal);
-  transition:all .4s cubic-bezier(.16,1,.3,1);
+  transition:all .4s var(--e);
 }
 .btn:hover{transform:translateY(-2px);box-shadow:5px 5px 0 var(--tinta)}
 .btn:active{transform:translateY(0)}
@@ -287,7 +335,7 @@ tr:last-child td{border-bottom:none}
 .mini{
   font-family:var(--dato);font-size:.9rem;font-weight:500;letter-spacing:.05em;
   border:2px solid var(--tinta);padding:8px 13px;white-space:nowrap;
-  transition:all .3s cubic-bezier(.16,1,.3,1);
+  transition:all .3s var(--e);
 }
 .mini:hover{background:var(--tinta);color:var(--papel)}
 .estado{font-family:var(--dato);font-size:.82rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:5px 10px;white-space:nowrap}
@@ -308,21 +356,83 @@ tr:last-child td{border-bottom:none}
 .pie strong{color:var(--tinta)}
 
 /* ═══════════ MOVIMIENTO ═══════════
-   Al revés del manual: el contenido está visible SIEMPRE y la animación
-   solo existe si el visitante no pidió reducir movimiento. Con
-   reduced-motion la página aparece y ya — nunca puede quedar en blanco. */
-@media (prefers-reduced-motion: no-preference){
-  .entra{animation:sube .75s cubic-bezier(.16,1,.3,1) both}
-  .entra:nth-child(2){animation-delay:.08s}
-  .entra:nth-child(3){animation-delay:.16s}
-  .entra:nth-child(4){animation-delay:.24s}
-  .vitrina .lote{animation:sube .5s cubic-bezier(.16,1,.3,1) both}
-  .vitrina .lote:nth-child(2){animation-delay:.06s}
-  .vitrina .lote:nth-child(3){animation-delay:.12s}
-  .vitrina .lote:nth-child(n+4){animation-delay:.18s}
+   Todo cuelga de [data-mov="on"], que el JS pone solo si el visitante NO pidió
+   reducir movimiento (o si lo forzó con el interruptor). Sin ese atributo el
+   contenido está visible y quieto — nunca puede quedar en blanco. */
+:root[data-mov="on"] .entra{animation:sube .75s var(--e) both}
+:root[data-mov="on"] .entra:nth-child(2){animation-delay:.09s}
+:root[data-mov="on"] .entra:nth-child(3){animation-delay:.18s}
+:root[data-mov="on"] .entra:nth-child(4){animation-delay:.27s}
+@keyframes sube{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+/* Los lotes aparecen al entrar en pantalla, no todos de golpe al cargar. */
+:root[data-mov="on"] .lote{
+  transition:opacity .7s var(--e),transform .7s var(--e),background .35s var(--e);
 }
-@keyframes sube{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+:root[data-mov="on"] .lote:not(.visto){opacity:0;transform:translateY(34px)}
+
+/* La foto respira dentro de su marco. */
+:root[data-mov="on"] .lote-foto img{transition:transform 1.1s var(--e),filter .6s var(--e)}
+:root[data-mov="on"] .lote:hover .lote-foto img{transform:scale(1.045)}
+
+/* Las marcas de registro se abren al pasar por encima. */
+:root[data-mov="on"] .lote-foto::before,
+:root[data-mov="on"] .lote-foto::after{transition:width .5s var(--e),height .5s var(--e)}
+:root[data-mov="on"] .lote:hover .lote-foto::before,
+:root[data-mov="on"] .lote:hover .lote-foto::after{width:30px;height:30px}
+
+/* El precio se subraya solo. */
+.precio{position:relative;display:inline-block;padding-bottom:6px}
+.precio::after{
+  content:"";position:absolute;left:0;bottom:0;height:4px;width:0;background:var(--senal);
+}
+:root[data-mov="on"] .precio::after{transition:width .55s var(--e)}
+:root[data-mov="on"] .lote:hover .precio::after{width:100%}
+
+/* El timbre de vendido cae con un golpe seco. */
+:root[data-mov="on"] .lote.visto .timbre{animation:timbrar .5s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes timbrar{
+  from{opacity:0;transform:translate(-50%,-50%) rotate(-11deg) scale(1.9)}
+  to{opacity:1;transform:translate(-50%,-50%) rotate(-11deg) scale(1)}
+}
+
+/* Los dígitos del odómetro entran de a uno, como el contador girando. */
+:root[data-mov="on"] .lote.visto .odo-n span{animation:girar .4s var(--e) both}
+:root[data-mov="on"] .odo-n span:nth-child(1){animation-delay:.05s}
+:root[data-mov="on"] .odo-n span:nth-child(2){animation-delay:.09s}
+:root[data-mov="on"] .odo-n span:nth-child(3){animation-delay:.13s}
+:root[data-mov="on"] .odo-n span:nth-child(4){animation-delay:.17s}
+:root[data-mov="on"] .odo-n span:nth-child(5){animation-delay:.21s}
+:root[data-mov="on"] .odo-n span:nth-child(n+6){animation-delay:.25s}
+@keyframes girar{from{opacity:0;transform:translateY(-70%)}to{opacity:1;transform:none}}
+
+/* La ficha entra desde abajo; el velo se funde. */
+:root[data-mov="on"] .velo{transition:opacity .35s var(--e)}
+:root[data-mov="on"] .velo:not(.on){opacity:0}
+:root[data-mov="on"] .velo.on .ficha{animation:fichar .5s var(--e) both}
+@keyframes fichar{from{opacity:0;transform:translateY(34px) scale(.985)}to{opacity:1;transform:none}}
+
+/* Cambio de filtro: la lista se repinta con un pestañeo, no de golpe. */
+:root[data-mov="on"] .vitrina.cambiando{opacity:.25;transform:translateY(6px)}
+:root[data-mov="on"] .vitrina{transition:opacity .22s var(--e),transform .22s var(--e)}
+
+/* La pastilla del filtro se rellena desde abajo. */
+.chip{position:relative;overflow:hidden;z-index:0}
+.chip::before{
+  content:"";position:absolute;inset:0;background:var(--tinta);
+  transform:translateY(101%);z-index:-1;
+}
+:root[data-mov="on"] .chip::before{transition:transform .38s var(--e)}
+:root[data-mov="on"] .chip:hover::before{transform:translateY(0)}
+:root[data-mov="on"] .chip:hover{color:var(--papel);background:transparent}
+
+/* La burbuja de WhatsApp se despliega. */
+:root[data-mov="on"] .wa.on{animation:desplegar .45s var(--e) both}
+@keyframes desplegar{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+
+@media (prefers-reduced-motion: reduce){
+  :root:not([data-mov="on"]) *{transition:none!important;animation:none!important}
+}
 </style>
 
 <header class="top">
@@ -334,6 +444,20 @@ tr:last-child td{border-bottom:none}
     <span class="demo-tag">Demo</span>
   </div>
 </header>
+
+<div class="barra-demo">
+  <div class="wrap barra-in">
+    <span class="barra-l">Demo · elija la paleta</span>
+    <div class="paletas" id="paletas">
+      <button class="sw" data-p="ripio"  aria-pressed="true"  title="Ripio"><i style="background:#E3E1DA"></i><i style="background:#C43F14"></i><span>Ripio</span></button>
+      <button class="sw" data-p="noche"  aria-pressed="false" title="Noche"><i style="background:#0F0E0C"></i><i style="background:#E0A93C"></i><span>Noche</span></button>
+      <button class="sw" data-p="taller" aria-pressed="false" title="Taller"><i style="background:#0C1A21"></i><i style="background:#E8402F"></i><span>Taller</span></button>
+      <button class="sw" data-p="nieve"  aria-pressed="false" title="Nieve"><i style="background:#EDF0F4"></i><i style="background:#1B4FD8"></i><span>Nieve</span></button>
+    </div>
+    <button class="mov-btn" id="movBtn" aria-pressed="false">Animaciones: <b id="movEstado">—</b></button>
+  </div>
+  <div class="wrap"><p class="mov-aviso" id="movAviso"></p></div>
+</div>
 
 <main>
   <section class="hero wrap">
@@ -548,10 +672,13 @@ function pintarVitrina(){
   });
 
   const disp = stock.filter(a => !a.vendido);
-  document.getElementById("nDisp").textContent = disp.length;
-  document.getElementById("nVend").textContent = stock.filter(a => a.vendido).length;
-  document.getElementById("nDesde").textContent =
-    disp.length ? "$" + plata(Math.min(...disp.map(a => a.precio))) : "—";
+  contar(document.getElementById("nDisp"), disp.length, "");
+  contar(document.getElementById("nVend"), stock.filter(a => a.vendido).length, "");
+  const min = disp.length ? Math.min(...disp.map(a => a.precio)) : null;
+  if(min === null) document.getElementById("nDesde").textContent = "—";
+  else contar(document.getElementById("nDesde"), min, "$");
+
+  if(typeof revisarVisibles === "function") revisarVisibles();
 }
 
 /* ================= FICHA ================= */
@@ -660,15 +787,21 @@ document.getElementById("btnReset").addEventListener("click", () => {
 });
 
 /* ================= FILTROS ================= */
+function repintarSuave(){
+  const v = document.getElementById("vitrina");
+  if(document.documentElement.dataset.mov !== "on"){ pintarVitrina(); return; }
+  v.classList.add("cambiando");
+  setTimeout(() => { pintarVitrina(); v.classList.remove("cambiando"); }, 200);
+}
 document.getElementById("filtros").addEventListener("click", e => {
   const c = e.target.closest(".chip");
   if(!c) return;
   filtroTipo = c.dataset.tipo;
   document.querySelectorAll(".chip").forEach(x =>
     x.setAttribute("aria-pressed", String(x === c)));
-  pintarVitrina();
+  repintarSuave();
 });
-document.getElementById("soloDisp").addEventListener("change", pintarVitrina);
+document.getElementById("soloDisp").addEventListener("change", repintarSuave);
 
 document.getElementById("btnBuscado").addEventListener("click", e => {
   document.getElementById("waBuscado").classList.add("on");
@@ -677,6 +810,85 @@ document.getElementById("btnBuscado").addEventListener("click", e => {
   e.currentTarget.style.cursor = "default";
 });
 
+/* ═══════════ PALETA ═══════════ */
+const LLAVE_P = "automotora_paleta";
+function aplicarPaleta(p){
+  if(p && p !== "ripio") document.documentElement.dataset.paleta = p;
+  else delete document.documentElement.dataset.paleta;
+  document.querySelectorAll("#paletas .sw").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.p === (p || "ripio"))));
+  try{ localStorage.setItem(LLAVE_P, p || "ripio"); }catch(e){}
+}
+document.getElementById("paletas").addEventListener("click", e => {
+  const b = e.target.closest(".sw");
+  if(b) aplicarPaleta(b.dataset.p);
+});
+let paletaGuardada = "ripio";
+try{ paletaGuardada = localStorage.getItem(LLAVE_P) || "ripio"; }catch(e){}
+aplicarPaleta(paletaGuardada);
+
+/* ═══════════ MOVIMIENTO ═══════════
+   Se respeta la señal del sistema por defecto. El interruptor permite forzarlo,
+   que es lo que hace falta cuando el equipo tiene "reducir movimiento" puesto y
+   hay que mostrarle la página a alguien. */
+const LLAVE_M = "automotora_movimiento";
+const pidioQuieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let forzado = null;
+try{ forzado = localStorage.getItem(LLAVE_M); }catch(e){}
+
+function aplicarMov(){
+  const encendido = forzado ? forzado === "on" : !pidioQuieto;
+  if(encendido) document.documentElement.dataset.mov = "on";
+  else delete document.documentElement.dataset.mov;
+  document.getElementById("movEstado").textContent = encendido ? "sí" : "no";
+  document.getElementById("movBtn").setAttribute("aria-pressed", String(encendido));
+  document.getElementById("movAviso").textContent =
+    (pidioQuieto && !encendido)
+      ? "Su equipo tiene activado «reducir movimiento», así que las transiciones están apagadas. No es que la página no las tenga: toque el interruptor para verlas."
+      : (pidioQuieto && encendido)
+        ? "Transiciones forzadas. Su equipo pide reducir movimiento, así que a un visitante con esa opción puesta le van a llegar apagadas."
+        : "";
+  if(encendido) revisarVisibles();
+}
+document.getElementById("movBtn").addEventListener("click", () => {
+  const ahora = document.documentElement.dataset.mov === "on";
+  forzado = ahora ? "off" : "on";
+  try{ localStorage.setItem(LLAVE_M, forzado); }catch(e){}
+  aplicarMov();
+});
+
+/* ═══════════ REVELADO AL DESPLAZAR ═══════════ */
+let observador = null;
+function revisarVisibles(){
+  if(document.documentElement.dataset.mov !== "on"){
+    document.querySelectorAll(".lote").forEach(l => l.classList.add("visto"));
+    return;
+  }
+  if(observador) observador.disconnect();
+  observador = new IntersectionObserver(entradas => {
+    entradas.forEach(en => {
+      if(en.isIntersecting){ en.target.classList.add("visto"); observador.unobserve(en.target); }
+    });
+  }, {rootMargin:"0px 0px -8% 0px", threshold:.08});
+  document.querySelectorAll(".lote:not(.visto)").forEach(l => observador.observe(l));
+}
+
+/* ═══════════ CIFRAS QUE SUBEN ═══════════ */
+function contar(el, hasta, prefijo){
+  if(document.documentElement.dataset.mov !== "on" || hasta > 99999999){
+    el.textContent = prefijo + hasta.toLocaleString("es-CL"); return;
+  }
+  const t0 = performance.now(), dur = 900;
+  const paso = ahora => {
+    const k = Math.min(1, (ahora - t0) / dur);
+    const suave = 1 - Math.pow(1 - k, 3);
+    el.textContent = prefijo + Math.round(hasta * suave).toLocaleString("es-CL");
+    if(k < 1) requestAnimationFrame(paso);
+  };
+  requestAnimationFrame(paso);
+}
+
 function pintarTodo(){ pintarVitrina(); pintarPanel(); }
+aplicarMov();
 pintarTodo();
 </script>
