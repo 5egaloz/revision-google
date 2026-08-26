@@ -169,9 +169,10 @@ input,select{font:inherit;color:inherit}
   border-bottom:1px solid var(--line-soft);overflow:hidden;
 }
 .medio img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}
-.medio svg{
-  display:block;width:100%;height:auto;box-sizing:border-box;
-  background:var(--surface-2);padding:14px 12px 6px;
+.medio .sinfoto,.ficha-medio .sinfoto{
+  aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;
+  background:var(--surface-2);color:var(--ink-3);
+  font-family:var(--data);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
 }
 .sello{
   position:absolute;top:10px;right:10px;
@@ -211,10 +212,6 @@ input,select{font:inherit;color:inherit}
 }
 .ficha-medio{background:var(--plate);border-bottom:1px solid var(--line-soft);overflow:hidden}
 .ficha-medio img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}
-.ficha-medio svg{
-  display:block;width:100%;max-width:400px;margin:0 auto;height:auto;
-  background:var(--surface-2);padding:20px 20px 8px;box-sizing:border-box;
-}
 .ficha-cuerpo{padding:20px;display:flex;flex-direction:column;gap:17px}
 .ficha-tit{font-family:var(--display);font-weight:600;font-size:1.85rem;line-height:1.05;margin:0}
 .ficha-precio{font-family:var(--display);font-weight:700;font-size:2.15rem;line-height:1;color:var(--baker);font-variant-numeric:tabular-nums}
@@ -380,6 +377,9 @@ tr:last-child td{border-bottom:none}
           <div class="campo"><label for="fTrac">Tracción</label>
             <select id="fTrac"><option>4x4</option><option>4x2</option><option>AWD</option></select>
           </div>
+          <div class="campo"><label for="fFoto">Foto del auto</label>
+            <input id="fFoto" type="file" accept="image/*">
+          </div>
         </div>
         <div class="alta-pie">
           <button class="btn" id="btnAgregar">Publicar en la vitrina</button>
@@ -392,7 +392,7 @@ tr:last-child td{border-bottom:none}
 
   <footer class="pie wrap">
     <p><strong>Esto es una demostración.</strong> El nombre, el logo y los colores se cambian por los de la automotora. Los vehículos, precios y kilometrajes son inventados para mostrar cómo se ve.</p>
-    <p>Las fotos son de catálogo de las marcas y muestran vehículos nuevos, así que no calzan con el año ni el kilometraje de cada aviso. En la versión real van las fotos de los autos que están en el patio. El botón de WhatsApp abre la conversación directo en el teléfono del vendedor.</p>
+    <p>Las fotos son de catálogo de las marcas y muestran vehículos nuevos, así que no calzan con el año ni el kilometraje de cada aviso; en la versión real van las fotos de los autos del patio. Al agregar un vehículo desde el panel se le sube su foto ahí mismo. El botón de WhatsApp abre la conversación directo en el teléfono del vendedor.</p>
   </footer>
 </main>
 
@@ -428,7 +428,7 @@ const STOCK_BASE = [
    desc:"Familiar, maletero amplio. Cámara de retroceso y climatizador. Se vendió en cuatro días de publicado."},
 ];
 
-const LLAVE = "automotora_demo_v2";
+const LLAVE = "automotora_demo_v3";
 let stock = cargar();
 
 function cargar(){
@@ -439,40 +439,48 @@ function cargar(){
   return STOCK_BASE.map(a => ({...a}));
 }
 function guardar(){
-  try{ localStorage.setItem(LLAVE, JSON.stringify(stock)); }catch(e){}
+  try{
+    localStorage.setItem(LLAVE, JSON.stringify(stock));
+  }catch(e){
+    const a = document.getElementById("avisoAlta");
+    if(a) a.textContent = "Se publicó, pero el navegador no alcanzó a guardarlo: se pierde al recargar.";
+  }
 }
 
 /* ================= FORMATO ================= */
 const plata = n => "$" + n.toLocaleString("es-CL");
 const kms   = n => n.toLocaleString("es-CL") + " km";
 
-/* ================= PLANOS ================= */
-/* Perfil esquemático por carrocería. Acá van las fotos reales del cliente. */
-function plano(tipo){
-  const c = {
-    Camioneta:'<path d="M8 56 L8 44 L20 41 L44 40 L60 22 L100 22 L106 40 L186 40 L190 43 L190 56 Z"/><path d="M64 26 L96 26 L100 39 L64 39 Z"/>',
-    SUV:      '<path d="M10 56 L10 43 L22 40 L44 38 L58 20 L134 20 L152 38 L182 40 L188 44 L188 56 Z"/><path d="M62 25 L92 25 L92 37 L54 37 Z"/><path d="M98 25 L128 25 L142 37 L98 37 Z"/>',
-    Citycar:  '<path d="M14 56 L14 44 L26 41 L46 40 L64 24 L118 24 L142 40 L170 42 L176 45 L176 56 Z"/><path d="M68 28 L94 28 L94 39 L58 39 Z"/><path d="M100 28 L116 28 L134 39 L100 39 Z"/>'
-  }[tipo] || '';
-  return `<svg viewBox="0 0 200 74" role="img" aria-label="Plano de ${tipo}">
-    <g fill="none" stroke="var(--baker)" stroke-width="1.6" stroke-linejoin="round">${c}</g>
-    <g fill="none" stroke="var(--baker)" stroke-width="1.6">
-      <circle cx="50" cy="56" r="11"/><circle cx="152" cy="56" r="11"/>
-    </g>
-    <g fill="none" stroke="var(--ink-3)" stroke-width="1.6" opacity=".5">
-      <circle cx="50" cy="56" r="4.5"/><circle cx="152" cy="56" r="4.5"/>
-      <path d="M4 69 L196 69"/>
-    </g>
-  </svg>`;
-}
-
-/* Foto real si la hay; si no, el plano. Los autos que el dueño agrega desde el
-   panel parten sin foto, y ahí se ve dónde va la suya. */
 function medio(a){
-  const src = FOTOS[a.foto];
+  const src = a.fotoData || FOTOS[a.foto];
   return src
     ? `<img src="${src}" alt="${a.nom} ${a.ano}" loading="lazy">`
-    : plano(a.tipo);
+    : '<div class="sinfoto">Sin foto</div>';
+}
+
+/* Achica la foto antes de guardarla: el navegador solo aguarda unos MB. */
+function achicar(archivo, listo){
+  const lector = new FileReader();
+  lector.onload = e => {
+    const im = new Image();
+    im.onload = () => {
+      const W = 880, H = 550;
+      const c = document.createElement("canvas");
+      c.width = W; c.height = H;
+      const cx = c.getContext("2d");
+      cx.fillStyle = "#ffffff"; cx.fillRect(0, 0, W, H);
+      const e2 = Math.max(W / im.width, H / im.height);
+      const w = im.width * e2, h = im.height * e2;
+      cx.drawImage(im, (W - w) / 2, (H - h) / 2, w, h);
+      let d = c.toDataURL("image/webp", .74);
+      if(d.indexOf("data:image/webp") !== 0) d = c.toDataURL("image/jpeg", .8);
+      listo(d);
+    };
+    im.onerror = () => listo(null);
+    im.src = e.target.result;
+  };
+  lector.onerror = () => listo(null);
+  lector.readAsDataURL(archivo);
 }
 
 /* ================= VITRINA ================= */
@@ -594,15 +602,24 @@ document.getElementById("btnAgregar").addEventListener("click", () => {
   if(!ano || ano < 1980 || ano > 2030){ aviso.textContent = "Revise el año: tiene que estar entre 1980 y 2030."; return; }
   if(!precio || precio <= 0){ aviso.textContent = "Falta el precio."; return; }
 
-  stock.unshift({
-    id: Date.now(), nom, ano, km: km || 0, precio,
-    tipo: v("fTipo"), comb: v("fComb"), trans: v("fTrans"), trac: v("fTrac"),
-    vendido: false, desc: "Recién ingresado. Consulte por más detalles y fotos."
-  });
-  guardar(); pintarTodo();
-  ["fMarca","fAno","fKm","fPrecio"].forEach(id => document.getElementById(id).value = "");
-  aviso.textContent = `${nom} quedó publicado en la vitrina.`;
-  document.getElementById("vitrina").scrollIntoView({behavior:"smooth", block:"start"});
+  const publicar = fotoData => {
+    stock.unshift({
+      id: Date.now(), nom, ano, km: km || 0, precio, fotoData,
+      tipo: v("fTipo"), comb: v("fComb"), trans: v("fTrans"), trac: v("fTrac"),
+      vendido: false, desc: "Recién ingresado. Consulte por más detalles."
+    });
+    guardar(); pintarTodo();
+    ["fMarca","fAno","fKm","fPrecio"].forEach(id => document.getElementById(id).value = "");
+    document.getElementById("fFoto").value = "";
+    aviso.textContent = fotoData
+      ? `${nom} quedó publicado en la vitrina.`
+      : `${nom} quedó publicado, pero sin foto.`;
+    document.getElementById("vitrina").scrollIntoView({behavior:"smooth", block:"start"});
+  };
+
+  const arch = document.getElementById("fFoto").files[0];
+  if(arch){ aviso.textContent = "Preparando la foto…"; achicar(arch, publicar); }
+  else publicar(null);
 });
 
 document.getElementById("btnReset").addEventListener("click", () => {
