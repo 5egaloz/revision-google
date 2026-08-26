@@ -1,14 +1,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>document.documentElement.dataset.mov="on";</script>
 <title>Automotora Cordillera</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Archivo:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap">
 
 <style>
-/* ═══════════ SEÑALÉTICA Y RIPIO ═══════════
-   Hormigón, tinta y un solo naranjo de advertencia. Claro a propósito:
-   el mundo de un patio de autos es luz de día, metal y gravilla — y las
-   fotos recortadas sobre blanco necesitan apoyarse en algo. */
+/* ═══════════ NOCHE ═══════════
+   Negro cálido y un solo ámbar de señalética. Un mundo visual cerrado: sin
+   tema claro ni oscuro del sistema, porque una automotora tiene un color.
+   Las fotos son recortes sobre blanco, así que van montadas sobre --monta,
+   una placa clara que NO sigue a la paleta. */
 :root{
   --papel:#0D0C0A; --placa:#181613; --placa-2:#25221D;
   --tinta:#F4F1E8; --grafito:#ADA595; --filete:#3D372D; --filete-2:#2B271F;
@@ -60,26 +62,10 @@ input,select{font:inherit;color:inherit}
   letter-spacing:.14em;text-transform:uppercase;padding:6px 11px;
 }
 
-/* ═══════════ BARRA DE DEMO ═══════════ */
-.barra-demo{background:var(--placa);border-bottom:1px solid var(--filete)}
-.barra-in{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:12px 20px}
-.barra-l{font-family:var(--dato);font-size:.8rem;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--grafito)}
-.mov-btn{
-  margin-left:auto;font-family:var(--dato);font-size:.85rem;font-weight:500;
-  color:var(--grafito);border:2px solid var(--filete);padding:8px 13px;
-  transition:all .3s var(--e);
-}
-.mov-btn:hover{border-color:var(--grafito);color:var(--tinta)}
-.mov-btn b{color:var(--senal)}
-.mov-aviso{
-  margin:0;padding:0 0 12px;font-size:.95rem;color:var(--grafito);max-width:70ch;
-}
-.mov-aviso:empty{display:none}
-
 /* ═══════════ PORTADA ═══════════ */
 /* El horizonte de Coyhaique, dibujado: el Mackay con su meseta plana al centro,
    el cordón lejano detrás y las lomas del valle del Simpson delante. Va en
-   tokens de la paleta, y bien apagado para no pelearle legibilidad al texto. */
+   tokens, y bien apagado para no pelearle legibilidad al texto. */
 .horizonte{
   position:absolute;left:0;right:0;bottom:0;height:min(300px,42vh);
   pointer-events:none;overflow:hidden;z-index:0;
@@ -381,9 +367,6 @@ tr:last-child td{border-bottom:none}
 :root[data-mov="on"] .wa.on{animation:desplegar .45s var(--e) both}
 @keyframes desplegar{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
 
-@media (prefers-reduced-motion: reduce){
-  :root:not([data-mov="on"]) *{transition:none!important;animation:none!important}
-}
 </style>
 
 <header class="top">
@@ -395,14 +378,6 @@ tr:last-child td{border-bottom:none}
     <span class="demo-tag">Demo</span>
   </div>
 </header>
-
-<div class="barra-demo">
-  <div class="wrap barra-in">
-    <span class="barra-l">Demostración</span>
-    <button class="mov-btn" id="movBtn" aria-pressed="false">Animaciones: <b id="movEstado">—</b></button>
-  </div>
-  <div class="wrap"><p class="mov-aviso" id="movAviso"></p></div>
-</div>
 
 <main>
   <div class="hero-marco">
@@ -773,36 +748,6 @@ document.getElementById("btnBuscado").addEventListener("click", e => {
   e.currentTarget.style.cursor = "default";
 });
 
-/* ═══════════ MOVIMIENTO ═══════════
-   Se respeta la señal del sistema por defecto. El interruptor permite forzarlo,
-   que es lo que hace falta cuando el equipo tiene "reducir movimiento" puesto y
-   hay que mostrarle la página a alguien. */
-const LLAVE_M = "automotora_movimiento";
-const pidioQuieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-let forzado = null;
-try{ forzado = localStorage.getItem(LLAVE_M); }catch(e){}
-
-function aplicarMov(){
-  const encendido = forzado ? forzado === "on" : !pidioQuieto;
-  if(encendido) document.documentElement.dataset.mov = "on";
-  else delete document.documentElement.dataset.mov;
-  document.getElementById("movEstado").textContent = encendido ? "sí" : "no";
-  document.getElementById("movBtn").setAttribute("aria-pressed", String(encendido));
-  document.getElementById("movAviso").textContent =
-    (pidioQuieto && !encendido)
-      ? "Su equipo tiene activado «reducir movimiento», así que las transiciones están apagadas. No es que la página no las tenga: toque el interruptor para verlas."
-      : (pidioQuieto && encendido)
-        ? "Transiciones forzadas. Su equipo pide reducir movimiento, así que a un visitante con esa opción puesta le van a llegar apagadas."
-        : "";
-  if(encendido) revisarVisibles();
-  else capas.forEach(c => { if(c.el) c.el.style.transform = ""; });
-}
-document.getElementById("movBtn").addEventListener("click", () => {
-  const ahora = document.documentElement.dataset.mov === "on";
-  forzado = ahora ? "off" : "on";
-  try{ localStorage.setItem(LLAVE_M, forzado); }catch(e){}
-  aplicarMov();
-});
 
 /* ═══════════ EL HORIZONTE SE MUEVE ═══════════
    Cada cordón a distinta velocidad: el lejano casi quieto, las lomas de
@@ -856,6 +801,5 @@ function contar(el, hasta, prefijo){
 }
 
 function pintarTodo(){ pintarVitrina(); pintarPanel(); }
-aplicarMov();
 pintarTodo();
 </script>
