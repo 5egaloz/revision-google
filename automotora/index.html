@@ -23,6 +23,8 @@
   --shadow:rgba(0,0,0,.42);
   --grain:rgba(255,255,255,.028);
   --plate:#EEF2F2;
+  --curva:cubic-bezier(.16,1,.3,1);
+  --halo:rgba(25,191,169,.10);
 
   --display:"Saira Condensed","Oswald","Arial Narrow",system-ui,sans-serif;
   --body:"Karla",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -46,6 +48,7 @@
     --shadow:rgba(16,24,26,.10);
     --grain:rgba(16,24,26,.022);
     --plate:#FFFFFF;
+    --halo:rgba(12,138,120,.09);
   }
 }
 :root[data-theme="light"]{
@@ -65,9 +68,11 @@
   --shadow:rgba(16,24,26,.10);
   --grain:rgba(16,24,26,.022);
   --plate:#FFFFFF;
+  --halo:rgba(12,138,120,.09);
 }
 
 *{box-sizing:border-box}
+::selection{background:var(--baker);color:var(--baker-ink)}
 html{-webkit-text-size-adjust:100%;overflow-x:hidden}
 body{
   margin:0;
@@ -83,7 +88,7 @@ body{
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 input,select{font:inherit;color:inherit}
 
-.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
 
 /* ============ BARRA SUPERIOR ============ */
 .top{
@@ -110,17 +115,39 @@ input,select{font:inherit;color:inherit}
 }
 
 /* ============ HERO ============ */
-.hero{padding:34px 0 24px;border-bottom:1px solid var(--line-soft)}
+.hero{
+  position:relative;padding:64px 0 52px;
+  border-bottom:1px solid var(--line-soft);overflow:hidden;
+}
+/* Halo tenue: da profundidad sin poner ningún elemento visible. */
+.hero::before{
+  content:"";position:absolute;left:50%;top:-40%;
+  width:min(900px,140%);height:520px;transform:translateX(-50%);
+  background:radial-gradient(ellipse at center,var(--halo),transparent 68%);
+  pointer-events:none;
+}
+.hero > *{position:relative}
+.rotulo-hero{
+  font-family:var(--data);font-size:.85rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--baker);margin-bottom:18px;
+  display:flex;align-items:center;gap:10px;
+}
+.rotulo-hero::after{content:"";flex:1;height:1px;background:var(--line);max-width:90px}
 .hero h1{
   font-family:var(--display);font-weight:600;
-  font-size:clamp(1.9rem,6.2vw,3.1rem);line-height:1.03;margin:0;
-  text-wrap:balance;letter-spacing:.005em;
+  font-size:clamp(2.1rem,6.6vw,3.9rem);line-height:.98;margin:0;
+  text-wrap:balance;letter-spacing:-.015em;max-width:19ch;
 }
 .hero h1 em{font-style:normal;color:var(--baker)}
-.hero p{margin:13px 0 0;max-width:46ch;color:var(--ink-2);font-size:1.1rem}
-.hero-cifras{display:flex;flex-wrap:wrap;gap:26px;margin-top:22px}
+.hero p{margin:22px 0 0;max-width:46ch;color:var(--ink-2);font-size:1.1rem}
+.hero-cifras{
+  display:flex;flex-wrap:wrap;gap:0;margin-top:38px;
+  border-top:1px solid var(--line);
+}
+.hero-cifras > div{padding:18px 30px 0 0;margin-right:30px;border-right:1px solid var(--line)}
+.hero-cifras > div:last-child{border-right:none;margin-right:0;padding-right:0}
 .cifra-n{
-  font-family:var(--display);font-weight:600;font-size:1.75rem;line-height:1;
+  font-family:var(--display);font-weight:600;font-size:2.15rem;line-height:1;
   font-variant-numeric:tabular-nums;
 }
 .cifra-l{
@@ -130,8 +157,8 @@ input,select{font:inherit;color:inherit}
 
 /* ============ FILTROS ============ */
 .filtros{
-  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
-  padding:18px 0 4px;
+  display:flex;flex-wrap:wrap;gap:9px;align-items:center;
+  padding:38px 0 4px;
 }
 .filtros-lbl{
   font-family:var(--data);font-size:.82rem;letter-spacing:.11em;
@@ -140,7 +167,7 @@ input,select{font:inherit;color:inherit}
 .chip{
   border:1px solid var(--line);border-radius:2px;
   padding:10px 16px;font-size:1rem;color:var(--ink-2);
-  background:var(--surface);transition:border-color .12s,color .12s;
+  background:var(--surface);transition:all .35s var(--curva);
 }
 .chip:hover{border-color:var(--baker);color:var(--ink)}
 .chip[aria-pressed="true"]{
@@ -151,17 +178,17 @@ input,select{font:inherit;color:inherit}
 
 /* ============ VITRINA ============ */
 .vitrina{
-  display:grid;gap:16px;padding:20px 0 46px;
+  display:grid;gap:22px;padding:24px 0 78px;
   grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));
 }
 .auto{
   background:var(--surface);border:1px solid var(--line);
   border-radius:3px;overflow:hidden;text-align:left;
   display:flex;flex-direction:column;
-  transition:border-color .14s,transform .14s;
+  transition:border-color .45s var(--curva),transform .45s var(--curva),box-shadow .45s var(--curva);
   box-shadow:0 1px 2px var(--shadow);
 }
-.auto:hover{border-color:var(--baker);transform:translateY(-2px)}
+.auto:hover{border-color:var(--baker);transform:translateY(-4px);box-shadow:0 14px 34px var(--shadow)}
 .auto.vendido{opacity:.62}
 .auto.vendido:hover{border-color:var(--line);transform:none}
 
@@ -183,7 +210,7 @@ input,select{font:inherit;color:inherit}
 .sello.disp{background:var(--baker-soft);color:var(--baker)}
 .sello.vend{background:var(--lenga-soft);color:var(--lenga)}
 
-.auto-cuerpo{padding:14px 15px 16px;display:flex;flex-direction:column;gap:11px;flex:1}
+.auto-cuerpo{padding:22px 22px 24px;display:flex;flex-direction:column;gap:14px;flex:1}
 .auto-tit{
   font-family:var(--display);font-weight:600;font-size:1.24rem;line-height:1.12;
   text-wrap:balance;
@@ -226,9 +253,11 @@ input,select{font:inherit;color:inherit}
   border-radius:2px;padding:14px 21px;font-weight:700;font-size:1.02rem;
   border:1px solid var(--baker);background:var(--baker);color:var(--baker-ink);
 }
-.btn:hover{filter:brightness(1.08)}
+.btn{transition:all .45s var(--curva)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 26px var(--shadow)}
+.btn:active{transform:translateY(0) scale(.98)}
 .btn.fantasma{background:transparent;color:var(--ink-2);border-color:var(--line)}
-.btn.fantasma:hover{color:var(--ink);border-color:var(--ink-3);filter:none}
+.btn.fantasma:hover{color:var(--ink);border-color:var(--ink-3);box-shadow:none}
 
 .wa{
   border:1px solid var(--line);border-radius:3px;background:var(--surface-2);
@@ -243,10 +272,14 @@ input,select{font:inherit;color:inherit}
 .wa-pie{font-size:.95rem;color:var(--ink-2);margin:0}
 
 /* ============ PANEL DEL DUEÑO ============ */
-.panel{border-top:1px solid var(--line);padding:38px 0 60px}
-.panel-cab{display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;margin-bottom:6px}
-.panel h2{font-family:var(--display);font-weight:600;font-size:1.75rem;margin:0;line-height:1.1}
-.panel-sub{color:var(--ink-2);max-width:56ch;margin:0 0 20px;font-size:1.06rem}
+.panel{border-top:1px solid var(--line);background:var(--surface-2);padding:76px 0 84px}
+.panel-cab{display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;margin-bottom:8px}
+.rotulo-sec{
+  font-family:var(--data);font-size:.85rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--baker);margin-bottom:14px;
+}
+.panel h2{font-family:var(--display);font-weight:600;font-size:clamp(1.9rem,4.6vw,2.6rem);margin:0;line-height:1.04;letter-spacing:-.012em}
+.panel-sub{color:var(--ink-2);max-width:56ch;margin:0 0 28px;font-size:1.06rem}
 .panel-caja{border:1px solid var(--line);border-radius:3px;background:var(--surface);overflow:hidden}
 .tabla-wrap{overflow-x:auto;max-width:100%}
 table{border-collapse:collapse;width:100%;min-width:520px}
@@ -263,14 +296,15 @@ tr:last-child td{border-bottom:none}
   border:1px solid var(--line);border-radius:2px;padding:9px 13px;
   font-size:.95rem;color:var(--ink-2);white-space:nowrap;
 }
+.mini{transition:all .35s var(--curva)}
 .mini:hover{border-color:var(--baker);color:var(--baker)}
 .estado{font-family:var(--data);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;border-radius:2px;white-space:nowrap}
 .estado.disp{background:var(--baker-soft);color:var(--baker)}
 .estado.vend{background:var(--lenga-soft);color:var(--lenga)}
 
-.alta{border-top:1px solid var(--line);padding:17px;background:var(--surface-2)}
+.alta{border-top:1px solid var(--line);padding:24px;background:var(--surface)}
 .alta h3{font-family:var(--display);font-weight:600;font-size:1.15rem;margin:0 0 13px}
-.campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:11px}
+.campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px}
 .campo label{
   display:block;font-family:var(--data);font-size:.8rem;letter-spacing:.09em;
   text-transform:uppercase;color:var(--ink-2);margin-bottom:6px;
@@ -284,9 +318,42 @@ tr:last-child td{border-bottom:none}
 .aviso{font-size:.98rem;color:var(--ink-2);margin:0}
 
 /* ============ PIE ============ */
+.cierre{border-top:1px solid var(--line);background:var(--ground);padding:78px 0}
+.cierre-in{display:grid;gap:34px;grid-template-columns:1fr}
+@media (min-width:820px){
+  .cierre-in{grid-template-columns:1.35fr 1fr;align-items:start;gap:52px}
+}
+.cierre h2{
+  font-family:var(--display);font-weight:600;
+  font-size:clamp(1.75rem,4.4vw,2.5rem);line-height:1.06;margin:0;
+  text-wrap:balance;letter-spacing:-.012em;max-width:22ch;
+}
+.cierre-lado{display:flex;flex-direction:column;gap:16px;align-items:flex-start}
+
 .pie{border-top:1px solid var(--line);padding:26px 0 44px;color:var(--ink-2);font-size:.98rem}
 .pie p{margin:0 0 8px;max-width:64ch}
 .pie strong{color:var(--ink-2)}
+
+/* El blueprint del skill arranca en opacity:0 y anima hacia visible. Acá va al
+   revés a propósito: el contenido se muestra siempre, y la animación existe
+   SOLO si el visitante no pidió reducir movimiento. Con reduced-motion activado
+   —el caso de Fer— la página simplemente aparece; nunca puede quedar en blanco. */
+@media (prefers-reduced-motion: no-preference){
+  .entra{animation:subir .8s var(--curva) both}
+  .entra:nth-child(2){animation-delay:.09s}
+  .entra:nth-child(3){animation-delay:.18s}
+  .entra:nth-child(4){animation-delay:.27s}
+  .vitrina .auto{animation:subir .55s var(--curva) both}
+  .vitrina .auto:nth-child(2){animation-delay:.05s}
+  .vitrina .auto:nth-child(3){animation-delay:.1s}
+  .vitrina .auto:nth-child(4){animation-delay:.15s}
+  .vitrina .auto:nth-child(5){animation-delay:.2s}
+  .vitrina .auto:nth-child(n+6){animation-delay:.25s}
+}
+@keyframes subir{
+  from{opacity:0;transform:translateY(22px);filter:blur(6px)}
+  to{opacity:1;transform:none;filter:none}
+}
 
 @media (prefers-reduced-motion: reduce){
   *{transition:none !important;animation:none !important}
@@ -312,9 +379,10 @@ tr:last-child td{border-bottom:none}
 
 <main>
   <section class="hero wrap">
-    <h1>Su comprador lo va a googlear <em>antes</em> de venir con la plata en la mano.</h1>
-    <p>Vitrina que usted mismo actualiza: entra un auto, lo sube; se vende, lo marca. Sin llamar a nadie.</p>
-    <div class="hero-cifras">
+    <div class="rotulo-hero entra">Stock al día · Coyhaique</div>
+    <h1 class="entra">Su comprador lo va a googlear <em>antes</em> de venir con la plata en la mano.</h1>
+    <p class="entra">Vitrina que usted mismo actualiza: entra un auto, lo sube; se vende, lo marca. Sin llamar a nadie.</p>
+    <div class="hero-cifras entra">
       <div>
         <div class="cifra-n" id="nDisp">—</div>
         <div class="cifra-l">En patio</div>
@@ -346,6 +414,7 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <section class="panel wrap">
+    <div class="rotulo-sec">Lo que no se ve desde afuera</div>
     <div class="panel-cab"><h2>Panel del dueño</h2></div>
     <p class="panel-sub">Esto es lo que diferencia una vitrina de una página muerta. Marque un auto como vendido y mire la vitrina de arriba: cambia al instante.</p>
 
@@ -386,6 +455,23 @@ tr:last-child td{border-bottom:none}
           <button class="btn" id="btnAgregar">Publicar en la vitrina</button>
           <button class="btn fantasma" id="btnReset">Volver al stock de ejemplo</button>
           <p class="aviso" id="avisoAlta"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cierre">
+    <div class="wrap cierre-in">
+      <div>
+        <div class="rotulo-sec">¿No está el que busca?</div>
+        <h2>Llegan autos nuevos todas las semanas. Díganos qué anda buscando y le avisamos apenas entre.</h2>
+      </div>
+      <div class="cierre-lado">
+        <button class="btn" id="btnBuscado">Decir qué busco</button>
+        <div class="wa" id="waBuscado">
+          <span class="wa-lbl">Así le llega el mensaje al vendedor</span>
+          <div class="burbuja">Hola, ando buscando una camioneta 4x4 diésel, hasta $20.000.000. ¿Me avisan si les entra algo así?</div>
+          <p class="wa-pie">El comprador que no encontró nada igual queda registrado, en vez de irse y no volver.</p>
         </div>
       </div>
     </div>
@@ -639,6 +725,14 @@ document.getElementById("filtros").addEventListener("click", e => {
   pintarVitrina();
 });
 document.getElementById("soloDisp").addEventListener("change", pintarVitrina);
+
+/* Aditivo: el bloque de cierre. No toca la vitrina, la ficha ni el panel. */
+document.getElementById("btnBuscado").addEventListener("click", e => {
+  document.getElementById("waBuscado").classList.add("on");
+  e.currentTarget.disabled = true;
+  e.currentTarget.style.opacity = ".45";
+  e.currentTarget.style.cursor = "default";
+});
 
 function pintarTodo(){ pintarVitrina(); pintarPanel(); }
 pintarTodo();
