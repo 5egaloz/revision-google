@@ -1,13 +1,4 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script>
-/* Pinta la paleta antes de que el navegador dibuje, para que no se vea el
-   destello de la paleta anterior al cargar. */
-(function(){
-  var p = "noche";
-  try{ p = localStorage.getItem("automotora_paleta") || "noche"; }catch(e){}
-  if(p !== "ripio") document.documentElement.dataset.paleta = p;
-})();
-</script>
 <title>Automotora Cordillera</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,17 +10,10 @@
    el mundo de un patio de autos es luz de día, metal y gravilla — y las
    fotos recortadas sobre blanco necesitan apoyarse en algo. */
 :root{
-  --papel:#E3E1DA;
-  --placa:#F4F3EF;
-  --placa-2:#DAD8D0;
-  --tinta:#16150F;
-  --grafito:#4E4B42;
-  --filete:#B8B5AA;
-  --filete-2:#CBC8BE;
-  --senal:#C43F14;
-  --senal-tinta:#FFFFFF;
-  --senal-suave:#F3DED4;
-  --sombra:rgba(22,21,15,.13);
+  --papel:#0D0C0A; --placa:#181613; --placa-2:#25221D;
+  --tinta:#F4F1E8; --grafito:#ADA595; --filete:#3D372D; --filete-2:#2B271F;
+  --senal:#E4AC3B; --senal-tinta:#17110A; --senal-suave:#35290E;
+  --sombra:rgba(0,0,0,.55);
   --monta:#F1EFE9;
   --monta-linea:#C9C4B8;
 
@@ -37,55 +21,6 @@
   --texto:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
   --e:cubic-bezier(.16,1,.3,1);
   --dato:"Roboto Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-}
-/* ── Paletas alternativas. Cada una es una decisión cerrada de marca, así que
-   no responde al tema del sistema: una automotora elige UN color, no dos. ── */
-:root[data-paleta="noche"]{
-  --papel:#0D0C0A; --placa:#181613; --placa-2:#25221D;
-  --tinta:#F4F1E8; --grafito:#ADA595; --filete:#3D372D; --filete-2:#2B271F;
-  --senal:#E4AC3B; --senal-tinta:#17110A; --senal-suave:#35290E;
-  --sombra:rgba(0,0,0,.55);
-}
-:root[data-paleta="taller"]{
-  --papel:#0C1A21; --placa:#13262F; --placa-2:#1D343E;
-  --tinta:#EAF2F4; --grafito:#93ABB4; --filete:#2A4551; --filete-2:#1E343E;
-  --senal:#E8402F; --senal-tinta:#FFFFFF; --senal-suave:#3D150F;
-  --sombra:rgba(0,0,0,.5);
-}
-:root[data-paleta="nieve"]{
-  --papel:#EDF0F4; --placa:#FFFFFF; --placa-2:#DCE2E9;
-  --tinta:#0D1520; --grafito:#47525F; --filete:#BEC7D2; --filete-2:#D2D9E2;
-  --senal:#1B4FD8; --senal-tinta:#FFFFFF; --senal-suave:#DCE3FA;
-  --sombra:rgba(13,21,32,.14);
-}
-
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]):not([data-paleta]){
-    --papel:#14130E;
-    --placa:#1E1C16;
-    --placa-2:#2A2820;
-    --tinta:#EFEDE4;
-    --grafito:#A9A498;
-    --filete:#3A382E;
-    --filete-2:#2C2A22;
-    --senal:#F2653A;
-    --senal-tinta:#1A0B05;
-    --senal-suave:#33180E;
-    --sombra:rgba(0,0,0,.45);
-  }
-}
-:root[data-theme="dark"]:not([data-paleta]){
-  --papel:#14130E;
-  --placa:#1E1C16;
-  --placa-2:#2A2820;
-  --tinta:#EFEDE4;
-  --grafito:#A9A498;
-  --filete:#3A382E;
-  --filete-2:#2C2A22;
-  --senal:#F2653A;
-  --senal-tinta:#1A0B05;
-  --senal-suave:#33180E;
-  --sombra:rgba(0,0,0,.45);
 }
 
 *{box-sizing:border-box}
@@ -129,16 +64,6 @@ input,select{font:inherit;color:inherit}
 .barra-demo{background:var(--placa);border-bottom:1px solid var(--filete)}
 .barra-in{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:12px 20px}
 .barra-l{font-family:var(--dato);font-size:.8rem;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--grafito)}
-.paletas{display:flex;flex-wrap:wrap;gap:8px}
-.sw{
-  display:flex;align-items:center;gap:7px;padding:7px 12px 7px 8px;
-  border:2px solid var(--filete);
-  font-family:var(--dato);font-size:.85rem;font-weight:500;color:var(--grafito);
-  transition:border-color .3s var(--e),color .3s;
-}
-.sw i{width:14px;height:14px;display:block;border:1px solid rgba(128,128,128,.45)}
-.sw:hover{border-color:var(--grafito);color:var(--tinta)}
-.sw[aria-pressed="true"]{border-color:var(--senal);color:var(--tinta);font-weight:700}
 .mov-btn{
   margin-left:auto;font-family:var(--dato);font-size:.85rem;font-weight:500;
   color:var(--grafito);border:2px solid var(--filete);padding:8px 13px;
@@ -154,8 +79,7 @@ input,select{font:inherit;color:inherit}
 /* ═══════════ PORTADA ═══════════ */
 /* El horizonte de Coyhaique, dibujado: el Mackay con su meseta plana al centro,
    el cordón lejano detrás y las lomas del valle del Simpson delante. Va en
-   tokens para que se recoloree con cada paleta, y bien apagado para no pelearle
-   legibilidad al texto. */
+   tokens de la paleta, y bien apagado para no pelearle legibilidad al texto. */
 .horizonte{
   position:absolute;left:0;right:0;bottom:0;height:min(300px,42vh);
   pointer-events:none;overflow:hidden;z-index:0;
@@ -474,13 +398,7 @@ tr:last-child td{border-bottom:none}
 
 <div class="barra-demo">
   <div class="wrap barra-in">
-    <span class="barra-l">Demo · elija la paleta</span>
-    <div class="paletas" id="paletas">
-      <button class="sw" data-p="ripio"  aria-pressed="false"  title="Ripio"><i style="background:#E3E1DA"></i><i style="background:#C43F14"></i><span>Ripio</span></button>
-      <button class="sw" data-p="noche"  aria-pressed="true" title="Noche"><i style="background:#0F0E0C"></i><i style="background:#E0A93C"></i><span>Noche</span></button>
-      <button class="sw" data-p="taller" aria-pressed="false" title="Taller"><i style="background:#0C1A21"></i><i style="background:#E8402F"></i><span>Taller</span></button>
-      <button class="sw" data-p="nieve"  aria-pressed="false" title="Nieve"><i style="background:#EDF0F4"></i><i style="background:#1B4FD8"></i><span>Nieve</span></button>
-    </div>
+    <span class="barra-l">Demostración</span>
     <button class="mov-btn" id="movBtn" aria-pressed="false">Animaciones: <b id="movEstado">—</b></button>
   </div>
   <div class="wrap"><p class="mov-aviso" id="movAviso"></p></div>
@@ -854,25 +772,6 @@ document.getElementById("btnBuscado").addEventListener("click", e => {
   e.currentTarget.style.opacity = ".45";
   e.currentTarget.style.cursor = "default";
 });
-
-/* ═══════════ PALETA ═══════════ */
-const LLAVE_P = "automotora_paleta";
-const PALETA_BASE = "noche";   // la que eligió Fer
-function aplicarPaleta(p){
-  p = p || PALETA_BASE;
-  if(p !== "ripio") document.documentElement.dataset.paleta = p;
-  else delete document.documentElement.dataset.paleta;
-  document.querySelectorAll("#paletas .sw").forEach(b =>
-    b.setAttribute("aria-pressed", String(b.dataset.p === p)));
-  try{ localStorage.setItem(LLAVE_P, p); }catch(e){}
-}
-document.getElementById("paletas").addEventListener("click", e => {
-  const b = e.target.closest(".sw");
-  if(b) aplicarPaleta(b.dataset.p);
-});
-let paletaGuardada = PALETA_BASE;
-try{ paletaGuardada = localStorage.getItem(LLAVE_P) || PALETA_BASE; }catch(e){}
-aplicarPaleta(paletaGuardada);
 
 /* ═══════════ MOVIMIENTO ═══════════
    Se respeta la señal del sistema por defecto. El interruptor permite forzarlo,
