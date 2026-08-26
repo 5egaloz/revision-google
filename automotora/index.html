@@ -1,0 +1,609 @@
+<title>Automotora Cordillera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Karla:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+
+<style>
+/* ============ TOKENS — dark-first: ripio y río ============ */
+:root{
+  --ground:#101416;
+  --surface:#1B2225;
+  --surface-2:#232C30;
+  --line:#2E3A3E;
+  --line-soft:#263034;
+  --ink:#E6EDEC;
+  --ink-2:#8FA0A3;
+  --ink-3:#6A797C;
+  --baker:#19BFA9;
+  --baker-ink:#062521;
+  --baker-soft:#12312D;
+  --lenga:#E08A4E;
+  --lenga-soft:#33200F;
+  --shadow:rgba(0,0,0,.42);
+  --grain:rgba(255,255,255,.028);
+
+  --display:"Saira Condensed","Oswald","Arial Narrow",system-ui,sans-serif;
+  --body:"Karla",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --data:"Roboto Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --ground:#EDF1F0;
+    --surface:#FFFFFF;
+    --surface-2:#E3EAE9;
+    --line:#C9D5D4;
+    --line-soft:#D8E1E0;
+    --ink:#111819;
+    --ink-2:#536566;
+    --ink-3:#778788;
+    --baker:#0C8A78;
+    --baker-ink:#FFFFFF;
+    --baker-soft:#DDF0EC;
+    --lenga:#A9541F;
+    --lenga-soft:#F7E7DA;
+    --shadow:rgba(16,24,26,.10);
+    --grain:rgba(16,24,26,.022);
+  }
+}
+:root[data-theme="light"]{
+  --ground:#EDF1F0;
+  --surface:#FFFFFF;
+  --surface-2:#E3EAE9;
+  --line:#C9D5D4;
+  --line-soft:#D8E1E0;
+  --ink:#111819;
+  --ink-2:#536566;
+  --ink-3:#778788;
+  --baker:#0C8A78;
+  --baker-ink:#FFFFFF;
+  --baker-soft:#DDF0EC;
+  --lenga:#A9541F;
+  --lenga-soft:#F7E7DA;
+  --shadow:rgba(16,24,26,.10);
+  --grain:rgba(16,24,26,.022);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--ground);
+  background-image:radial-gradient(var(--grain) 1px, transparent 1px);
+  background-size:4px 4px;
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.55;
+}
+:focus-visible{outline:2px solid var(--baker);outline-offset:2px;border-radius:3px}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select{font:inherit;color:inherit}
+
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+
+/* ============ BARRA SUPERIOR ============ */
+.top{
+  border-bottom:1px solid var(--line);
+  background:var(--surface);
+  position:sticky;top:0;z-index:30;
+}
+.top-in{display:flex;align-items:center;gap:14px;padding:13px 18px;max-width:1120px;margin:0 auto}
+.marca{display:flex;align-items:center;gap:11px;min-width:0}
+.marca svg{flex:none}
+.marca-txt{min-width:0}
+.marca-nom{
+  font-family:var(--display);font-weight:700;font-size:1.28rem;line-height:1;
+  letter-spacing:.01em;text-transform:uppercase;white-space:nowrap;
+}
+.marca-sub{
+  font-family:var(--data);font-size:.62rem;color:var(--ink-3);
+  letter-spacing:.16em;text-transform:uppercase;margin-top:3px;
+}
+.demo-tag{
+  margin-left:auto;flex:none;
+  font-family:var(--data);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--lenga);border:1px solid var(--lenga);border-radius:3px;padding:4px 7px;
+}
+
+/* ============ HERO ============ */
+.hero{padding:34px 0 24px;border-bottom:1px solid var(--line-soft)}
+.hero h1{
+  font-family:var(--display);font-weight:600;
+  font-size:clamp(1.9rem,6.2vw,3.1rem);line-height:1.03;margin:0;
+  text-wrap:balance;letter-spacing:.005em;
+}
+.hero h1 em{font-style:normal;color:var(--baker)}
+.hero p{margin:13px 0 0;max-width:46ch;color:var(--ink-2);font-size:1.02rem}
+.hero-cifras{display:flex;flex-wrap:wrap;gap:26px;margin-top:22px}
+.cifra-n{
+  font-family:var(--display);font-weight:600;font-size:1.75rem;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.cifra-l{
+  font-family:var(--data);font-size:.62rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);margin-top:5px;
+}
+
+/* ============ FILTROS ============ */
+.filtros{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  padding:18px 0 4px;
+}
+.filtros-lbl{
+  font-family:var(--data);font-size:.62rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);margin-right:4px;
+}
+.chip{
+  border:1px solid var(--line);border-radius:2px;
+  padding:7px 13px;font-size:.85rem;color:var(--ink-2);
+  background:var(--surface);transition:border-color .12s,color .12s;
+}
+.chip:hover{border-color:var(--baker);color:var(--ink)}
+.chip[aria-pressed="true"]{
+  background:var(--baker);border-color:var(--baker);color:var(--baker-ink);font-weight:700;
+}
+.solo-disp{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--ink-2)}
+.solo-disp input{width:16px;height:16px;accent-color:var(--baker)}
+
+/* ============ VITRINA ============ */
+.vitrina{
+  display:grid;gap:16px;padding:20px 0 46px;
+  grid-template-columns:repeat(auto-fill,minmax(275px,1fr));
+}
+.auto{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:3px;overflow:hidden;text-align:left;
+  display:flex;flex-direction:column;
+  transition:border-color .14s,transform .14s;
+  box-shadow:0 1px 2px var(--shadow);
+}
+.auto:hover{border-color:var(--baker);transform:translateY(-2px)}
+.auto.vendido{opacity:.62}
+.auto.vendido:hover{border-color:var(--line);transform:none}
+
+.plano{
+  position:relative;background:var(--surface-2);
+  border-bottom:1px solid var(--line-soft);
+  padding:14px 12px 6px;
+}
+.plano svg{display:block;width:100%;height:auto}
+.sello{
+  position:absolute;top:10px;right:10px;
+  font-family:var(--data);font-size:.58rem;letter-spacing:.13em;text-transform:uppercase;
+  padding:4px 7px;border-radius:2px;
+}
+.sello.disp{background:var(--baker-soft);color:var(--baker)}
+.sello.vend{background:var(--lenga-soft);color:var(--lenga)}
+
+.auto-cuerpo{padding:14px 15px 16px;display:flex;flex-direction:column;gap:11px;flex:1}
+.auto-tit{
+  font-family:var(--display);font-weight:600;font-size:1.24rem;line-height:1.12;
+  text-wrap:balance;
+}
+.auto-tit span{color:var(--ink-3);font-weight:500}
+.specs{
+  display:flex;flex-wrap:wrap;gap:5px 12px;
+  font-family:var(--data);font-size:.71rem;color:var(--ink-2);
+  font-variant-numeric:tabular-nums;
+}
+.specs i{font-style:normal;color:var(--ink-3)}
+.precio{
+  font-family:var(--display);font-weight:700;font-size:1.62rem;line-height:1;
+  font-variant-numeric:tabular-nums;margin-top:auto;padding-top:4px;
+}
+.precio.vend{color:var(--ink-3);text-decoration:line-through}
+
+/* ============ FICHA ============ */
+.velo{
+  position:fixed;inset:0;background:rgba(4,8,9,.72);
+  z-index:50;display:none;padding:16px;overflow-y:auto;
+}
+.velo.on{display:block}
+.ficha{
+  background:var(--surface);border:1px solid var(--line);border-radius:4px;
+  max-width:640px;margin:14px auto;overflow:hidden;
+}
+.ficha-plano{background:var(--surface-2);padding:20px 20px 8px;border-bottom:1px solid var(--line-soft)}
+.ficha-plano svg{display:block;width:100%;max-width:400px;margin:0 auto;height:auto}
+.ficha-cuerpo{padding:20px;display:flex;flex-direction:column;gap:17px}
+.ficha-tit{font-family:var(--display);font-weight:600;font-size:1.85rem;line-height:1.05;margin:0}
+.ficha-precio{font-family:var(--display);font-weight:700;font-size:2.15rem;line-height:1;color:var(--baker);font-variant-numeric:tabular-nums}
+.tabla{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:1px;background:var(--line-soft);border:1px solid var(--line-soft)}
+.celda{background:var(--surface);padding:11px 13px}
+.celda dt{font-family:var(--data);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.celda dd{margin:4px 0 0;font-size:.95rem;font-variant-numeric:tabular-nums}
+.ficha-desc{color:var(--ink-2);font-size:.95rem;margin:0;max-width:60ch}
+.acciones{display:flex;flex-wrap:wrap;gap:10px}
+.btn{
+  border-radius:2px;padding:12px 19px;font-weight:700;font-size:.92rem;
+  border:1px solid var(--baker);background:var(--baker);color:var(--baker-ink);
+}
+.btn:hover{filter:brightness(1.08)}
+.btn.fantasma{background:transparent;color:var(--ink-2);border-color:var(--line)}
+.btn.fantasma:hover{color:var(--ink);border-color:var(--ink-3);filter:none}
+
+.wa{
+  border:1px solid var(--line);border-radius:3px;background:var(--surface-2);
+  padding:15px;display:none;flex-direction:column;gap:9px;
+}
+.wa.on{display:flex}
+.wa-lbl{font-family:var(--data);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.burbuja{
+  background:var(--baker-soft);border-left:2px solid var(--baker);
+  padding:11px 13px;border-radius:2px;font-size:.92rem;color:var(--ink);
+}
+.wa-pie{font-size:.8rem;color:var(--ink-3);margin:0}
+
+/* ============ PANEL DEL DUEÑO ============ */
+.panel{border-top:1px solid var(--line);padding:38px 0 60px}
+.panel-cab{display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;margin-bottom:6px}
+.panel h2{font-family:var(--display);font-weight:600;font-size:1.75rem;margin:0;line-height:1.1}
+.panel-sub{color:var(--ink-2);max-width:56ch;margin:0 0 20px;font-size:.97rem}
+.panel-caja{border:1px solid var(--line);border-radius:3px;background:var(--surface);overflow:hidden}
+.tabla-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px}
+th{
+  font-family:var(--data);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);text-align:left;padding:11px 13px;border-bottom:1px solid var(--line);
+  background:var(--surface-2);white-space:nowrap;
+}
+td{padding:11px 13px;border-bottom:1px solid var(--line-soft);font-size:.9rem;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.td-nom{font-weight:700}
+.td-num{font-family:var(--data);font-variant-numeric:tabular-nums;white-space:nowrap}
+.mini{
+  border:1px solid var(--line);border-radius:2px;padding:6px 11px;
+  font-size:.78rem;color:var(--ink-2);white-space:nowrap;
+}
+.mini:hover{border-color:var(--baker);color:var(--baker)}
+.estado{font-family:var(--data);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:2px;white-space:nowrap}
+.estado.disp{background:var(--baker-soft);color:var(--baker)}
+.estado.vend{background:var(--lenga-soft);color:var(--lenga)}
+
+.alta{border-top:1px solid var(--line);padding:17px;background:var(--surface-2)}
+.alta h3{font-family:var(--display);font-weight:600;font-size:1.15rem;margin:0 0 13px}
+.campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:11px}
+.campo label{
+  display:block;font-family:var(--data);font-size:.6rem;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:5px;
+}
+.campo input,.campo select{
+  width:100%;background:var(--surface);border:1px solid var(--line);
+  border-radius:2px;padding:9px 11px;font-size:.9rem;
+}
+.campo input:focus,.campo select:focus{border-color:var(--baker);outline:none}
+.alta-pie{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:13px}
+.aviso{font-size:.83rem;color:var(--ink-3);margin:0}
+
+/* ============ PIE ============ */
+.pie{border-top:1px solid var(--line);padding:26px 0 44px;color:var(--ink-3);font-size:.83rem}
+.pie p{margin:0 0 8px;max-width:64ch}
+.pie strong{color:var(--ink-2)}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important;animation:none !important}
+  .auto:hover{transform:none}
+}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="marca">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
+        <path d="M3 22 L11 7 L15 15 L19 9 L27 22 Z" fill="none" stroke="var(--baker)" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M3 22 L27 22" stroke="var(--ink-3)" stroke-width="1.7"/>
+      </svg>
+      <div class="marca-txt">
+        <div class="marca-nom">Automotora Cordillera</div>
+        <div class="marca-sub">Coyhaique · Aysén</div>
+      </div>
+    </div>
+    <span class="demo-tag">Demo</span>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <h1>Su comprador lo va a googlear <em>antes</em> de venir con la plata en la mano.</h1>
+    <p>Vitrina que usted mismo actualiza: entra un auto, lo sube; se vende, lo marca. Sin llamar a nadie.</p>
+    <div class="hero-cifras">
+      <div>
+        <div class="cifra-n" id="nDisp">—</div>
+        <div class="cifra-l">En patio</div>
+      </div>
+      <div>
+        <div class="cifra-n" id="nVend">—</div>
+        <div class="cifra-l">Vendidos</div>
+      </div>
+      <div>
+        <div class="cifra-n" id="nDesde">—</div>
+        <div class="cifra-l">Desde</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="filtros" id="filtros">
+      <span class="filtros-lbl">Tipo</span>
+      <button class="chip" data-tipo="todos" aria-pressed="true">Todos</button>
+      <button class="chip" data-tipo="Camioneta" aria-pressed="false">Camionetas</button>
+      <button class="chip" data-tipo="SUV" aria-pressed="false">SUV</button>
+      <button class="chip" data-tipo="Citycar" aria-pressed="false">Citycar</button>
+      <label class="solo-disp">
+        <input type="checkbox" id="soloDisp" checked>
+        Solo disponibles
+      </label>
+    </div>
+    <section class="vitrina" id="vitrina"></section>
+  </div>
+
+  <section class="panel wrap">
+    <div class="panel-cab"><h2>Panel del dueño</h2></div>
+    <p class="panel-sub">Esto es lo que diferencia una vitrina de una página muerta. Marque un auto como vendido y mire la vitrina de arriba: cambia al instante.</p>
+
+    <div class="panel-caja">
+      <div class="tabla-wrap">
+        <table>
+          <thead>
+            <tr><th>Vehículo</th><th>Recorrido</th><th>Precio</th><th>Estado</th><th></th></tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="alta">
+        <h3>Agregar vehículo</h3>
+        <div class="campos">
+          <div class="campo"><label for="fMarca">Marca y modelo</label><input id="fMarca" placeholder="Ford Ranger XLT"></div>
+          <div class="campo"><label for="fAno">Año</label><input id="fAno" type="number" placeholder="2020" min="1980" max="2030"></div>
+          <div class="campo"><label for="fKm">Recorrido (km)</label><input id="fKm" type="number" placeholder="85000" min="0"></div>
+          <div class="campo"><label for="fPrecio">Precio (CLP)</label><input id="fPrecio" type="number" placeholder="21500000" min="0"></div>
+          <div class="campo"><label for="fTipo">Tipo</label>
+            <select id="fTipo"><option>Camioneta</option><option>SUV</option><option>Citycar</option></select>
+          </div>
+          <div class="campo"><label for="fComb">Combustible</label>
+            <select id="fComb"><option>Diésel</option><option>Bencina</option></select>
+          </div>
+          <div class="campo"><label for="fTrans">Transmisión</label>
+            <select id="fTrans"><option>Mecánico</option><option>Automático</option></select>
+          </div>
+          <div class="campo"><label for="fTrac">Tracción</label>
+            <select id="fTrac"><option>4x4</option><option>4x2</option><option>AWD</option></select>
+          </div>
+        </div>
+        <div class="alta-pie">
+          <button class="btn" id="btnAgregar">Publicar en la vitrina</button>
+          <button class="btn fantasma" id="btnReset">Volver al stock de ejemplo</button>
+          <p class="aviso" id="avisoAlta"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="pie wrap">
+    <p><strong>Esto es una demostración.</strong> El nombre, el logo y los colores se cambian por los de la automotora. Los vehículos, precios y kilometrajes son inventados para mostrar cómo se ve.</p>
+    <p>En la versión real, cada auto lleva sus fotos donde acá va el plano, y el botón de WhatsApp abre la conversación directo en el teléfono del vendedor.</p>
+  </footer>
+</main>
+
+<div class="velo" id="velo" role="dialog" aria-modal="true" aria-labelledby="fichaTit">
+  <div class="ficha" id="fichaCaja"></div>
+</div>
+
+<script>
+/* ================= DATOS DE EJEMPLO ================= */
+const STOCK_BASE = [
+  {id:1, nom:"Toyota Hilux 4x4 SR", ano:2019, km:98000, precio:24900000, tipo:"Camioneta",
+   comb:"Diésel", trans:"Mecánico", trac:"4x4", vendido:false,
+   desc:"Camioneta de trabajo con mantenciones al día en servicio técnico. Tapa de batea y pisos de goma. Recibimos vehículo en parte de pago."},
+  {id:2, nom:"Suzuki Jimny GLX", ano:2021, km:41000, precio:17500000, tipo:"SUV",
+   comb:"Bencina", trans:"Mecánico", trac:"4x4", vendido:false,
+   desc:"Un dueño, siempre en Coyhaique. Ideal para ripio y nieve. Neumáticos con poco uso."},
+  {id:3, nom:"Nissan Navara SE", ano:2018, km:132000, precio:19800000, tipo:"Camioneta",
+   comb:"Diésel", trans:"Automático", trac:"4x4", vendido:false,
+   desc:"Recién salida de mantención de los 130 mil. Papeles al día, sin multas ni prendas."},
+  {id:4, nom:"Subaru Forester AWD", ano:2017, km:115000, precio:14200000, tipo:"SUV",
+   comb:"Bencina", trans:"Automático", trac:"AWD", vendido:false,
+   desc:"Tracción permanente, se porta bien en camino de tierra. Interior sin roturas."},
+  {id:5, nom:"Chevrolet Sail LT", ano:2020, km:62000, precio:7900000, tipo:"Citycar",
+   comb:"Bencina", trans:"Mecánico", trac:"4x2", vendido:false,
+   desc:"Bajo consumo, perfecto para moverse en ciudad. Mantenciones documentadas."},
+  {id:6, nom:"Mitsubishi L200 Katana", ano:2016, km:168000, precio:15600000, tipo:"Camioneta",
+   comb:"Diésel", trans:"Mecánico", trac:"4x4", vendido:false,
+   desc:"Mecánicamente sana, motor sin consumo de aceite. Detalles de pintura propios del uso."},
+  {id:7, nom:"Kia Sportage LX", ano:2019, km:78000, precio:16400000, tipo:"SUV",
+   comb:"Bencina", trans:"Automático", trac:"4x2", vendido:false,
+   desc:"Familiar, maletero amplio. Cámara de retroceso y climatizador."},
+  {id:8, nom:"Hyundai Grand i10", ano:2022, km:28000, precio:9300000, tipo:"Citycar",
+   comb:"Bencina", trans:"Mecánico", trac:"4x2", vendido:true,
+   desc:"Muy poco recorrido para el año. Se vendió en cuatro días de publicado."}
+];
+
+const LLAVE = "automotora_demo_v1";
+let stock = cargar();
+
+function cargar(){
+  try{
+    const g = localStorage.getItem(LLAVE);
+    if(g){ const d = JSON.parse(g); if(Array.isArray(d) && d.length) return d; }
+  }catch(e){}
+  return STOCK_BASE.map(a => ({...a}));
+}
+function guardar(){
+  try{ localStorage.setItem(LLAVE, JSON.stringify(stock)); }catch(e){}
+}
+
+/* ================= FORMATO ================= */
+const plata = n => "$" + n.toLocaleString("es-CL");
+const kms   = n => n.toLocaleString("es-CL") + " km";
+
+/* ================= PLANOS ================= */
+/* Perfil esquemático por carrocería. Acá van las fotos reales del cliente. */
+function plano(tipo){
+  const c = {
+    Camioneta:'<path d="M8 56 L8 44 L20 41 L44 40 L60 22 L100 22 L106 40 L186 40 L190 43 L190 56 Z"/><path d="M64 26 L96 26 L100 39 L64 39 Z"/>',
+    SUV:      '<path d="M10 56 L10 43 L22 40 L44 38 L58 20 L134 20 L152 38 L182 40 L188 44 L188 56 Z"/><path d="M62 25 L92 25 L92 37 L54 37 Z"/><path d="M98 25 L128 25 L142 37 L98 37 Z"/>',
+    Citycar:  '<path d="M14 56 L14 44 L26 41 L46 40 L64 24 L118 24 L142 40 L170 42 L176 45 L176 56 Z"/><path d="M68 28 L94 28 L94 39 L58 39 Z"/><path d="M100 28 L116 28 L134 39 L100 39 Z"/>'
+  }[tipo] || '';
+  return `<svg viewBox="0 0 200 74" role="img" aria-label="Plano de ${tipo}">
+    <g fill="none" stroke="var(--baker)" stroke-width="1.6" stroke-linejoin="round">${c}</g>
+    <g fill="none" stroke="var(--baker)" stroke-width="1.6">
+      <circle cx="50" cy="56" r="11"/><circle cx="152" cy="56" r="11"/>
+    </g>
+    <g fill="none" stroke="var(--ink-3)" stroke-width="1.6" opacity=".5">
+      <circle cx="50" cy="56" r="4.5"/><circle cx="152" cy="56" r="4.5"/>
+      <path d="M4 69 L196 69"/>
+    </g>
+  </svg>`;
+}
+
+/* ================= VITRINA ================= */
+let filtroTipo = "todos";
+
+function visibles(){
+  const solo = document.getElementById("soloDisp").checked;
+  return stock.filter(a =>
+    (filtroTipo === "todos" || a.tipo === filtroTipo) && (!solo || !a.vendido)
+  );
+}
+
+function pintarVitrina(){
+  const cont = document.getElementById("vitrina");
+  const lista = visibles();
+  cont.innerHTML = lista.length ? "" :
+    '<p style="color:var(--ink-3);grid-column:1/-1;padding:26px 0">No hay vehículos con ese filtro.</p>';
+
+  lista.forEach(a => {
+    const b = document.createElement("button");
+    b.className = "auto" + (a.vendido ? " vendido" : "");
+    b.type = "button";
+    b.innerHTML = `
+      <div class="plano">
+        ${plano(a.tipo)}
+        <span class="sello ${a.vendido ? "vend" : "disp"}">${a.vendido ? "Vendido" : "Disponible"}</span>
+      </div>
+      <div class="auto-cuerpo">
+        <div class="auto-tit">${a.nom} <span>${a.ano}</span></div>
+        <div class="specs">
+          <span>${kms(a.km)}</span><i>·</i><span>${a.comb}</span><i>·</i><span>${a.trans}</span><i>·</i><span>${a.trac}</span>
+        </div>
+        <div class="precio ${a.vendido ? "vend" : ""}">${plata(a.precio)}</div>
+      </div>`;
+    b.addEventListener("click", () => abrirFicha(a.id));
+    cont.appendChild(b);
+  });
+
+  const disp = stock.filter(a => !a.vendido);
+  document.getElementById("nDisp").textContent = disp.length;
+  document.getElementById("nVend").textContent = stock.filter(a => a.vendido).length;
+  document.getElementById("nDesde").textContent =
+    disp.length ? plata(Math.min(...disp.map(a => a.precio))) : "—";
+}
+
+/* ================= FICHA ================= */
+function abrirFicha(id){
+  const a = stock.find(x => x.id === id);
+  if(!a) return;
+  const msg = `Hola, vi el ${a.nom} ${a.ano} en su sitio (${plata(a.precio)}). ¿Sigue disponible? ¿Reciben auto en parte de pago?`;
+  document.getElementById("fichaCaja").innerHTML = `
+    <div class="ficha-plano">${plano(a.tipo)}</div>
+    <div class="ficha-cuerpo">
+      <div>
+        <h2 class="ficha-tit" id="fichaTit">${a.nom} ${a.ano}</h2>
+        <div class="ficha-precio">${plata(a.precio)}</div>
+      </div>
+      <dl class="tabla">
+        <div class="celda"><dt>Recorrido</dt><dd>${kms(a.km)}</dd></div>
+        <div class="celda"><dt>Combustible</dt><dd>${a.comb}</dd></div>
+        <div class="celda"><dt>Transmisión</dt><dd>${a.trans}</dd></div>
+        <div class="celda"><dt>Tracción</dt><dd>${a.trac}</dd></div>
+      </dl>
+      <p class="ficha-desc">${a.desc}</p>
+      <div class="acciones">
+        <button class="btn" id="btnWa"${a.vendido ? " disabled style=\"opacity:.45;cursor:default\"" : ""}>
+          ${a.vendido ? "Este vehículo ya se vendió" : "Consultar por WhatsApp"}
+        </button>
+        <button class="btn fantasma" id="btnCerrar">Volver a la vitrina</button>
+      </div>
+      <div class="wa" id="waCaja">
+        <span class="wa-lbl">Así le llega el mensaje al vendedor</span>
+        <div class="burbuja">${msg}</div>
+        <p class="wa-pie">El comprador no escribe nada: el mensaje va armado con el auto que estaba mirando.</p>
+      </div>
+    </div>`;
+  document.getElementById("velo").classList.add("on");
+  document.body.style.overflow = "hidden";
+  document.getElementById("btnCerrar").addEventListener("click", cerrarFicha);
+  const wa = document.getElementById("btnWa");
+  if(!a.vendido) wa.addEventListener("click", () => document.getElementById("waCaja").classList.add("on"));
+  wa.focus();
+}
+function cerrarFicha(){
+  document.getElementById("velo").classList.remove("on");
+  document.body.style.overflow = "";
+}
+document.getElementById("velo").addEventListener("click", e => {
+  if(e.target.id === "velo") cerrarFicha();
+});
+document.addEventListener("keydown", e => { if(e.key === "Escape") cerrarFicha(); });
+
+/* ================= PANEL ================= */
+function pintarPanel(){
+  const tb = document.getElementById("tbody");
+  tb.innerHTML = "";
+  stock.forEach(a => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="td-nom">${a.nom} <span style="color:var(--ink-3);font-weight:400">${a.ano}</span></td>
+      <td class="td-num">${kms(a.km)}</td>
+      <td class="td-num">${plata(a.precio)}</td>
+      <td><span class="estado ${a.vendido ? "vend" : "disp"}">${a.vendido ? "Vendido" : "Disponible"}</span></td>
+      <td style="text-align:right"><button class="mini">${a.vendido ? "Volver a publicar" : "Marcar vendido"}</button></td>`;
+    tr.querySelector(".mini").addEventListener("click", () => {
+      a.vendido = !a.vendido;
+      guardar(); pintarTodo();
+    });
+    tb.appendChild(tr);
+  });
+}
+
+document.getElementById("btnAgregar").addEventListener("click", () => {
+  const v = id => document.getElementById(id).value.trim();
+  const aviso = document.getElementById("avisoAlta");
+  const nom = v("fMarca"), ano = +v("fAno"), km = +v("fKm"), precio = +v("fPrecio");
+
+  if(!nom){ aviso.textContent = "Falta la marca y el modelo."; return; }
+  if(!ano || ano < 1980 || ano > 2030){ aviso.textContent = "Revise el año: tiene que estar entre 1980 y 2030."; return; }
+  if(!precio || precio <= 0){ aviso.textContent = "Falta el precio."; return; }
+
+  stock.unshift({
+    id: Date.now(), nom, ano, km: km || 0, precio,
+    tipo: v("fTipo"), comb: v("fComb"), trans: v("fTrans"), trac: v("fTrac"),
+    vendido: false, desc: "Recién ingresado. Consulte por más detalles y fotos."
+  });
+  guardar(); pintarTodo();
+  ["fMarca","fAno","fKm","fPrecio"].forEach(id => document.getElementById(id).value = "");
+  aviso.textContent = `${nom} quedó publicado en la vitrina.`;
+  document.getElementById("vitrina").scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+document.getElementById("btnReset").addEventListener("click", () => {
+  stock = STOCK_BASE.map(a => ({...a}));
+  guardar(); pintarTodo();
+  document.getElementById("avisoAlta").textContent = "Stock de ejemplo restaurado.";
+});
+
+/* ================= FILTROS ================= */
+document.getElementById("filtros").addEventListener("click", e => {
+  const c = e.target.closest(".chip");
+  if(!c) return;
+  filtroTipo = c.dataset.tipo;
+  document.querySelectorAll(".chip").forEach(x =>
+    x.setAttribute("aria-pressed", String(x === c)));
+  pintarVitrina();
+});
+document.getElementById("soloDisp").addEventListener("change", pintarVitrina);
+
+function pintarTodo(){ pintarVitrina(); pintarPanel(); }
+pintarTodo();
+</script>
