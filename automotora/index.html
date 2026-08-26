@@ -253,6 +253,29 @@ input,select{font:inherit;color:inherit}
 .cierre .burbuja{background:rgba(255,255,255,.1);color:var(--papel)}
 .cierre-lado{display:flex;flex-direction:column;gap:18px;align-items:flex-start}
 
+/* ═══════════ ACCESO ═══════════ */
+.acceso{padding:76px 0 84px;border-top:3px solid var(--tinta)}
+.acceso h2{font-family:var(--titular);font-weight:800;font-size:clamp(2rem,5.4vw,3rem);line-height:.94;text-transform:uppercase;margin:18px 0 0}
+.acceso-sub{color:var(--grafito);max-width:52ch;margin:16px 0 32px;font-size:1.06rem}
+.acceso-caja{
+  border:3px solid var(--tinta);background:var(--placa);padding:26px;
+  max-width:420px;display:flex;flex-direction:column;gap:18px;align-items:stretch;
+}
+.acceso-caja .btn{align-self:flex-start}
+.acceso-err{margin:0;color:var(--senal);font-size:.98rem;min-height:1.4em}
+.acceso-nota{margin:0;color:var(--grafito);font-size:.95rem;border-top:1px solid var(--filete);padding-top:14px}
+.pie-acceso{
+  font-family:var(--dato);font-size:.98rem;color:var(--senal);
+  border-bottom:2px solid var(--senal);padding:0 0 2px;
+}
+.pie-acceso:hover{color:var(--tinta);border-color:var(--tinta)}
+.salir{
+  font-family:var(--dato);font-size:.9rem;color:var(--grafito);
+  border:2px solid var(--filete);padding:8px 13px;margin-left:auto;
+}
+.salir:hover{border-color:var(--senal);color:var(--senal)}
+.panel-cab-fila{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+
 /* ═══════════ PANEL ═══════════ */
 .panel{border-top:3px solid var(--tinta);padding:72px 0 84px}
 .panel h2{font-family:var(--titular);font-weight:800;font-size:clamp(2rem,5.4vw,3rem);line-height:.94;text-transform:uppercase;margin:18px 0 0}
@@ -437,8 +460,27 @@ tr:last-child td{border-bottom:none}
     </div>
   </section>
 
+  <section class="acceso wrap" id="acceso" hidden>
+    <span class="rotulo">Acceso del dueño</span>
+    <h2>Entre a su panel</h2>
+    <p class="acceso-sub">Desde acá publica autos, les sube la foto y los marca vendidos. El público no ve nada de esto.</p>
+    <form class="acceso-caja" id="formAcceso" autocomplete="on">
+      <div class="campo">
+        <label for="clave">Clave</label>
+        <input id="clave" type="password" autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <button class="btn" type="submit">Entrar</button>
+      <p class="acceso-err" id="accesoErr"></p>
+      <p class="acceso-nota">Demostración: la clave real la define la automotora al instalarlo.</p>
+    </form>
+  </section>
+
+  <div id="zonaPanel" hidden>
   <section class="panel wrap">
-    <span class="rotulo">Lo que no se ve desde afuera</span>
+    <div class="panel-cab-fila">
+      <span class="rotulo">Lo que no se ve desde afuera</span>
+      <button class="salir" id="btnSalir">Cerrar sesión</button>
+    </div>
     <h2>Panel del dueño</h2>
     <p class="panel-sub">Esto es lo que separa una vitrina de una página muerta. Marque un auto como vendido y mire el patio de arriba: cambia al instante.</p>
 
@@ -471,8 +513,11 @@ tr:last-child td{border-bottom:none}
     </div>
   </section>
 
+  </div>
+
   <footer class="pie wrap">
     <p><strong>Esto es una demostración.</strong> El nombre, el logo y los colores se cambian por los de la automotora. Los vehículos, precios y kilometrajes son inventados para mostrar cómo se ve.</p>
+    <p><button class="pie-acceso" id="irAcceso">Acceso del dueño</button></p>
     <p>Las fotos son de catálogo de las marcas y muestran vehículos nuevos, así que no calzan con el año ni el kilometraje de cada aviso; en la versión real van las fotos de los autos del patio. Al agregar un vehículo desde el panel se le sube su foto ahí mismo. El botón de WhatsApp abre la conversación directo en el teléfono del vendedor.</p>
   </footer>
 </main>
@@ -800,6 +845,72 @@ function contar(el, hasta, prefijo){
   requestAnimationFrame(paso);
 }
 
-function pintarTodo(){ pintarVitrina(); pintarPanel(); }
+/* ═══════════ LA PUERTA DEL PANEL ═══════════
+   ⚠️ ESTO NO ES SEGURIDAD Y NO PRETENDE SERLO.
+   Cualquiera que abra "ver código fuente" lee la clave. En una página estática
+   no hay forma de que sea de otra manera: no hay servidor que valide nada.
+
+   Va así a propósito, en claro y no como hash: un hash aquí parecería seguro
+   sin serlo, y esa mentira ya costó caro una vez (ver sacos-deudas, donde un
+   SHA-256 sin sal quedó público 45 días).
+
+   Sirve para la demostración: esconde el panel del público y le muestra al
+   cliente que su vitrina y su administración son cosas distintas.
+
+   EN EL SITIO REAL el panel NO se sirve desde acá: va en otra URL detrás de
+   autenticación del servidor (Caddy o n8n), y su archivo no se sube al repo
+   público — el mismo criterio que ya se usó con mostrador.html en Llega y
+   Retira. Los datos de esta demo son inventados, así que no hay nada expuesto. */
+const CLAVE_DEMO = "cordillera";
+const SESION = "automotora_sesion";
+
+function abrirPanel(){
+  document.getElementById("acceso").hidden = true;
+  document.getElementById("zonaPanel").hidden = false;
+  pintarPanel();
+}
+function cerrarPanel(){
+  document.getElementById("zonaPanel").hidden = true;
+  document.getElementById("acceso").hidden = true;
+  document.getElementById("clave").value = "";
+  document.getElementById("accesoErr").textContent = "";
+}
+
+document.getElementById("irAcceso").addEventListener("click", () => {
+  const a = document.getElementById("acceso");
+  a.hidden = false;
+  a.scrollIntoView({behavior:"smooth", block:"start"});
+  document.getElementById("clave").focus();
+});
+
+document.getElementById("formAcceso").addEventListener("submit", e => {
+  e.preventDefault();
+  const err = document.getElementById("accesoErr");
+  if(document.getElementById("clave").value.trim() !== CLAVE_DEMO){
+    err.textContent = "Clave incorrecta.";
+    document.getElementById("clave").value = "";
+    return;
+  }
+  err.textContent = "";
+  try{ sessionStorage.setItem(SESION, "1"); }catch(e){}
+  abrirPanel();
+  document.getElementById("zonaPanel").scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+document.getElementById("btnSalir").addEventListener("click", () => {
+  try{ sessionStorage.removeItem(SESION); }catch(e){}
+  cerrarPanel();
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+/* La sesión vive en sessionStorage: al cerrar la pestaña se cae sola. */
+let sesionViva = false;
+try{ sesionViva = sessionStorage.getItem(SESION) === "1"; }catch(e){}
+if(sesionViva) abrirPanel();
+
+function pintarTodo(){
+  pintarVitrina();
+  if(!document.getElementById("zonaPanel").hidden) pintarPanel();
+}
 pintarTodo();
 </script>
