@@ -141,7 +141,23 @@ input,select{font:inherit;color:inherit}
 .mov-aviso:empty{display:none}
 
 /* ═══════════ PORTADA ═══════════ */
-.hero{padding:60px 0 0}
+/* El horizonte de Coyhaique, dibujado: el Mackay con su meseta plana al centro,
+   el cordón lejano detrás y las lomas del valle del Simpson delante. Va en
+   tokens para que se recoloree con cada paleta, y bien apagado para no pelearle
+   legibilidad al texto. */
+.horizonte{
+  position:absolute;left:0;right:0;bottom:0;height:min(300px,42vh);
+  pointer-events:none;overflow:hidden;z-index:0;
+  -webkit-mask-image:linear-gradient(to bottom,transparent,#000 42%);
+  mask-image:linear-gradient(to bottom,transparent,#000 42%);
+}
+.horizonte svg{display:block;width:100%;height:100%}
+.cerro-3{fill:var(--filete-2)}
+.cerro-2{fill:var(--filete)}
+.cerro-1{fill:var(--placa-2)}
+
+.hero-marco{position:relative;overflow:hidden}
+.hero{position:relative;z-index:1;padding:60px 0 0}
 .hero h1{
   font-family:var(--titular);font-weight:800;
   font-size:clamp(2.9rem,10vw,6.4rem);line-height:.88;
@@ -460,6 +476,23 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <main>
+  <div class="hero-marco">
+  <div class="horizonte" aria-hidden="true">
+    <svg viewBox="0 0 1440 300" preserveAspectRatio="xMidYMax slice">
+      <!-- cordón lejano -->
+      <path class="cerro-3" d="M0,232 L88,198 L168,220 L258,164 L338,196 L430,146
+        L520,186 L610,156 L700,200 L800,170 L900,212 L1000,180 L1100,216
+        L1200,186 L1300,220 L1440,196 L1440,300 L0,300 Z"/>
+      <!-- el Mackay: la meseta plana de basalto que se ve desde toda la ciudad -->
+      <path class="cerro-2" d="M0,296 L120,286 L206,262 L252,212 L302,197
+        L618,193 L678,212 L742,258 L862,272 L980,246 L1052,229 L1182,225
+        L1252,249 L1342,268 L1440,279 L1440,300 L0,300 Z"/>
+      <!-- lomas del valle del Simpson -->
+      <path class="cerro-1" d="M0,300 L160,288 L320,296 L470,282 L640,293
+        L800,279 L960,290 L1120,277 L1290,289 L1440,281 L1440,300 L0,300 Z"/>
+    </svg>
+  </div>
+
   <section class="hero wrap">
     <span class="rotulo entra">Patio abierto · Stock al día</span>
     <h1 class="entra">Su comprador lo googlea <em>antes</em> de venir con la plata</h1>
@@ -470,6 +503,7 @@ tr:last-child td{border-bottom:none}
       <div><div class="tira-l">Desde</div><div class="tira-n" id="nDesde">—</div></div>
     </div>
   </section>
+  </div>
 
   <div class="wrap">
     <div class="filtros" id="filtros">
@@ -849,6 +883,7 @@ function aplicarMov(){
         ? "Transiciones forzadas. Su equipo pide reducir movimiento, así que a un visitante con esa opción puesta le van a llegar apagadas."
         : "";
   if(encendido) revisarVisibles();
+  else capas.forEach(c => { if(c.el) c.el.style.transform = ""; });
 }
 document.getElementById("movBtn").addEventListener("click", () => {
   const ahora = document.documentElement.dataset.mov === "on";
@@ -856,6 +891,26 @@ document.getElementById("movBtn").addEventListener("click", () => {
   try{ localStorage.setItem(LLAVE_M, forzado); }catch(e){}
   aplicarMov();
 });
+
+/* ═══════════ EL HORIZONTE SE MUEVE ═══════════
+   Cada cordón a distinta velocidad: el lejano casi quieto, las lomas de
+   adelante más rápido. Es la sensación de mirar por la ventanilla. */
+const capas = [
+  {el: document.querySelector(".cerro-3"), v: 0.06},
+  {el: document.querySelector(".cerro-2"), v: 0.14},
+  {el: document.querySelector(".cerro-1"), v: 0.26}
+];
+let pidiendo = false;
+function moverCerros(){
+  pidiendo = false;
+  if(document.documentElement.dataset.mov !== "on") return;
+  const y = window.scrollY;
+  if(y > 700) return;
+  capas.forEach(c => { if(c.el) c.el.style.transform = `translateY(${y * c.v}px)`; });
+}
+window.addEventListener("scroll", () => {
+  if(!pidiendo){ pidiendo = true; requestAnimationFrame(moverCerros); }
+}, {passive:true});
 
 /* ═══════════ REVELADO AL DESPLAZAR ═══════════ */
 let observador = null;
