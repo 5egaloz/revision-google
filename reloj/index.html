@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>Registro de entrada</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0f1620">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  :root{
+    --fondo:#0f1620; --fondo-2:#182231; --linea:#2c3a4e;
+    --texto:#f2f5f9; --texto-2:#b9c6d6;
+    --verde:#2fa96b; --verde-fuerte:#127a48;
+    --naranja:#e07a2f; --naranja-fuerte:#a8521a;
+    --rojo:#e0563f;
+    --tipo:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    background:var(--fondo);color:var(--texto);font-family:var(--tipo);
+    font-size:20px;line-height:1.4;-webkit-font-smoothing:antialiased;
+    overflow:hidden;touch-action:manipulation;
+    user-select:none;-webkit-user-select:none;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer}
+  .pantalla{position:fixed;inset:0;display:none;flex-direction:column}
+  .pantalla.activa{display:flex}
+
+  /* ---------- barra de arriba ---------- */
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:16px 22px;border-bottom:1px solid var(--linea);background:var(--fondo-2);flex-wrap:wrap}
+  .reloj{font-size:3.4rem;font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+  .fecha{font-size:1.05rem;color:var(--texto-2);font-weight:600;margin-top:4px}
+  .der{display:flex;align-items:center;gap:14px}
+  .pastilla{font-size:1.05rem;font-weight:700;padding:10px 16px;border-radius:999px;
+    background:rgba(47,169,107,.16);color:#7ee0ac;border:1px solid rgba(47,169,107,.45)}
+  .pastilla.aviso{background:rgba(224,122,47,.16);color:#ffc38a;border-color:rgba(224,122,47,.5)}
+  .pastilla.malo{background:rgba(224,86,63,.16);color:#ffa494;border-color:rgba(224,86,63,.5)}
+  .icono{width:60px;height:60px;border-radius:16px;border:1px solid var(--linea);
+    display:grid;place-items:center;font-size:1.6rem;background:#101a26}
+  .icono:active{background:#1d2a3a}
+
+  /* ---------- tarjetas de la gente ---------- */
+  .gente{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:22px;
+    display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));align-content:start}
+  .tarjeta{background:var(--fondo-2);border:1px solid var(--linea);border-radius:20px;
+    padding:22px;display:flex;align-items:center;gap:18px;text-align:left;min-height:116px;
+    transition:transform .08s ease}
+  .tarjeta:active{transform:scale(.97);background:#1d2a3a}
+  .tarjeta.dentro{border-color:rgba(47,169,107,.65);background:linear-gradient(180deg,rgba(47,169,107,.12),var(--fondo-2))}
+  .ini{width:68px;height:68px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;
+    font-size:1.6rem;font-weight:700;background:#2b3a4d;color:#dce7f4}
+  .tarjeta.dentro .ini{background:var(--verde-fuerte);color:#fff}
+  .nom{display:block;font-size:1.5rem;font-weight:700;line-height:1.15}
+  .sub{display:block;font-size:1.05rem;font-weight:600;color:var(--texto-2);margin-top:6px}
+  .tarjeta.dentro .sub{color:#7ee0ac}
+  .vacio{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--texto-2);font-size:1.2rem;font-weight:600}
+  footer{padding:14px 22px;border-top:1px solid var(--linea);background:var(--fondo-2);
+    display:flex;justify-content:space-between;gap:16px;font-size:1.05rem;font-weight:600;color:var(--texto-2);flex-wrap:wrap}
+
+  /* ---------- teclado del PIN ---------- */
+  .pin{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px}
+  .pin h2{font-size:2.4rem;font-weight:700;text-align:center;line-height:1.1}
+  .accion{font-size:1.3rem;font-weight:700;padding:10px 22px;border-radius:999px}
+  .accion.entrada{background:rgba(47,169,107,.18);color:#7ee0ac;border:1px solid rgba(47,169,107,.5)}
+  .accion.salida{background:rgba(224,122,47,.18);color:#ffc38a;border:1px solid rgba(224,122,47,.5)}
+  .puntos{display:flex;gap:18px;margin:6px 0}
+  .punto{width:22px;height:22px;border-radius:50%;border:2px solid #55688044;background:#1b2635}
+  .punto.lleno{background:var(--texto);border-color:var(--texto)}
+  .teclas{display:grid;grid-template-columns:repeat(3,120px);gap:14px}
+  .teclas button{height:92px;border-radius:18px;background:var(--fondo-2);border:1px solid var(--linea);
+    font-size:2.2rem;font-weight:700}
+  .teclas button:active{background:#2b3a4d}
+  .teclas .chico{font-size:1.1rem;font-weight:700;color:var(--texto-2)}
+  .error{min-height:32px;font-size:1.15rem;font-weight:700;color:#ffa494;text-align:center}
+  .sacude{animation:sacude .3s}
+  @keyframes sacude{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+
+  /* ---------- confirmación ---------- */
+  #listo{align-items:center;justify-content:center;text-align:center;padding:30px;gap:10px}
+  #listo.entrada{background:var(--verde-fuerte)}
+  #listo.salida{background:var(--naranja-fuerte)}
+  #listo .tick{font-size:5rem;line-height:1}
+  #listo .quien{font-size:3rem;font-weight:700;line-height:1.1}
+  #listo .que{font-size:1.6rem;font-weight:700;opacity:.95}
+  #listo .hora{font-size:4.6rem;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  #listo .nota{font-size:1.15rem;font-weight:600;opacity:.9;max-width:24em}
+
+  /* ---------- ajustes ---------- */
+  #ajustes{background:var(--fondo);overflow-y:auto}
+  .caja{max-width:640px;margin:0 auto;padding:28px 22px 60px;width:100%}
+  .caja h2{font-size:1.9rem;font-weight:700;margin-bottom:6px}
+  .caja p.ayuda{color:var(--texto-2);font-size:1.05rem;font-weight:600;margin-bottom:22px}
+  label{display:block;font-size:1.05rem;font-weight:700;color:var(--texto-2);margin:18px 0 8px}
+  input[type=text],input[type=password]{width:100%;padding:16px;font-size:1.15rem;font-family:inherit;
+    background:#101a26;border:1px solid var(--linea);border-radius:12px;color:var(--texto)}
+  input:focus{outline:2px solid var(--naranja);outline-offset:-2px}
+  .btn{display:block;width:100%;margin-top:16px;padding:18px;border-radius:14px;font-size:1.15rem;font-weight:700;
+    background:var(--texto);color:#0f1620}
+  .btn.claro{background:transparent;color:var(--texto);border:1px solid var(--linea)}
+  .btn.peligro{background:transparent;color:#ffa494;border:1px solid rgba(224,86,63,.6)}
+  .dato{background:var(--fondo-2);border:1px solid var(--linea);border-radius:14px;padding:16px;margin-top:18px;
+    font-size:1.05rem;font-weight:600;color:var(--texto-2)}
+  .dato b{color:var(--texto)}
+  h3.titulo{font-size:1.35rem;font-weight:700;margin:34px 0 6px;padding-top:22px;border-top:1px solid var(--linea)}
+  .fila{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--fondo-2);
+    border:1px solid var(--linea);border-radius:12px;margin-top:10px}
+  .fila .quien{flex:1;font-size:1.1rem;font-weight:700}
+  .fila .quien small{display:block;font-size:.95rem;font-weight:600;color:var(--texto-2)}
+  .fila button{padding:12px 16px;border-radius:10px;font-size:1rem;font-weight:700;
+    color:#ffa494;border:1px solid rgba(224,86,63,.6)}
+  .fila button:active{background:rgba(224,86,63,.2)}
+  .par{display:flex;gap:14px}
+  .par > div{flex:1}
+  .aviso{margin-top:14px;font-size:1.05rem;font-weight:700;min-height:28px}
+  .aviso.bien{color:#7ee0ac}
+  .aviso.mal{color:#ffa494}
+</style>
+</head>
+<body>
+
+<!-- ======================= PANTALLA 1: la gente ======================= -->
+<section class="pantalla activa" id="pantalla-gente">
+  <header>
+    <div>
+      <div class="reloj" id="reloj">--:--</div>
+      <div class="fecha" id="fecha">&nbsp;</div>
+    </div>
+    <div class="der">
+      <span class="pastilla" id="estado">Cargando…</span>
+      <button class="icono" id="btn-ajustes" aria-label="Ajustes">⚙</button>
+    </div>
+  </header>
+  <div class="gente" id="gente"></div>
+  <footer>
+    <span id="pie-dentro">&nbsp;</span>
+    <span id="pie-nota">Toca tu nombre para marcar</span>
+  </footer>
+</section>
+
+<!-- ======================= PANTALLA 2: el PIN ======================= -->
+<section class="pantalla" id="pantalla-pin">
+  <header>
+    <div>
+      <div class="reloj" id="reloj2">--:--</div>
+      <div class="fecha">Marcando</div>
+    </div>
+    <button class="icono" id="btn-volver" aria-label="Volver">✕</button>
+  </header>
+  <div class="pin">
+    <h2 id="pin-nombre">&nbsp;</h2>
+    <span class="accion" id="pin-accion">&nbsp;</span>
+    <div class="puntos" id="puntos"></div>
+    <div class="error" id="pin-error">&nbsp;</div>
+    <div class="teclas" id="teclas"></div>
+  </div>
+</section>
+
+<!-- ======================= PANTALLA 3: listo ======================= -->
+<section class="pantalla" id="listo">
+  <div class="tick">✓</div>
+  <div class="quien" id="listo-quien">&nbsp;</div>
+  <div class="que" id="listo-que">&nbsp;</div>
+  <div class="hora" id="listo-hora">--:--</div>
+  <div class="nota" id="listo-nota">&nbsp;</div>
+</section>
+
+<!-- ======================= PANTALLA 4: ajustes ======================= -->
+<section class="pantalla" id="ajustes">
+  <header>
+    <div><div class="reloj" style="font-size:2rem">Ajustes</div></div>
+    <button class="icono" id="btn-cerrar-ajustes" aria-label="Cerrar">✕</button>
+  </header>
+  <div class="caja">
+    <div id="ajustes-clave">
+      <h2>Solo el encargado</h2>
+      <p class="ayuda">Escribe la clave del servidor para abrir los ajustes.</p>
+      <input type="password" id="clave-entrar" inputmode="numeric" autocomplete="off" placeholder="Clave">
+      <button class="btn" id="btn-entrar-ajustes">Entrar</button>
+      <div class="error" id="ajustes-error">&nbsp;</div>
+    </div>
+
+    <div id="ajustes-cuerpo" hidden>
+      <h2>Ajustes de la tablet</h2>
+      <p class="ayuda">Los trabajadores y sus PIN se administran en la planilla de Google, no acá.</p>
+
+      <label for="servidor">Servidor (webhook de n8n)</label>
+      <input type="text" id="servidor" autocomplete="off" spellcheck="false" placeholder="Vacío = modo demostración">
+
+      <label for="clave">Clave del servidor</label>
+      <input type="password" id="clave" autocomplete="off" placeholder="La misma que está en n8n">
+
+      <button class="btn" id="btn-guardar">Guardar y recargar</button>
+      <button class="btn claro" id="btn-pantalla">Pantalla completa</button>
+      <button class="btn claro" id="btn-refrescar">Traer la lista de nuevo</button>
+
+      <h3 class="titulo">Trabajadores</h3>
+      <p class="ayuda">Los que aparecen en la tablet. Agregar a uno acá lo escribe en la
+        planilla al tiro; no hay que abrir Google.</p>
+      <div id="lista-trabajadores"></div>
+
+      <div class="par">
+        <div>
+          <label for="nuevo-nombre">Nombre y apellido</label>
+          <input type="text" id="nuevo-nombre" autocomplete="off" placeholder="Ej: Carolina Muñoz">
+        </div>
+        <div>
+          <label for="nuevo-pin">PIN de 4 dígitos</label>
+          <input type="text" id="nuevo-pin" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="1234">
+        </div>
+      </div>
+      <label for="nuevo-cargo">Cargo (opcional)</label>
+      <input type="text" id="nuevo-cargo" autocomplete="off" placeholder="Ej: Caja">
+      <button class="btn" id="btn-agregar">Agregar trabajador</button>
+      <div class="aviso" id="aviso-trabajador">&nbsp;</div>
+
+      <h3 class="titulo">Marcas pendientes</h3>
+      <div class="dato" id="dato-cola">&nbsp;</div>
+      <button class="btn peligro" id="btn-subir-cola">Subir las marcas pendientes ahora</button>
+      <div class="dato">
+        <b>Modo demostración:</b> si el campo Servidor está vacío, la tablet inventa
+        trabajadores y no manda nada a ninguna parte. Sirve para mostrarlo sin riesgo.<br><br>
+        <b>Si se corta el internet:</b> las marcas se guardan en la tablet y suben solas
+        cuando vuelve. No se pierde ninguna mientras no se borren los datos del navegador.
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+'use strict';
+
+/* ============================================================
+   Configuración. La URL del servidor se puede cambiar en ⚙ sin
+   tocar el código; lo que se guarda ahí manda sobre esto.
+   ============================================================ */
+const CONFIG = {
+  api: '',   // vacío = demostración. La URL del servidor se pega en ⚙ Ajustes.
+  refrescoSegundos: 60,     // cada cuánto se vuelve a preguntar quién está adentro
+  segundosConfirmacion: 5,  // cuánto queda la pantalla verde/naranja antes de volver
+  largoPin: 4
+};
+
+const LS = {
+  servidor: 'asistencia.servidor',
+  clave: 'asistencia.clave',
+  cola: 'asistencia.cola',
+  demo: 'asistencia.demo'      // los trabajadores inventados del modo demostración
+};
+
+const $ = (id) => document.getElementById(id);
+const guardado = (k, d) => { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } };
+const anotar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+
+let servidor = guardado(LS.servidor, CONFIG.api).trim();
+let clave = guardado(LS.clave, '');
+let gente = [];            // [{nombre, cargo, dentro, desde}]
+let elegido = null;        // el trabajador que está marcando
+let pin = '';
+let cola = leerCola();     // marcas que no alcanzaron a subir
+let temporizador = null;
+let subiendo = false;
+
+/* ---------------- reloj ---------------- */
+const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function hhmm(d){ return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
+function pintarReloj(){
+  const d = new Date();
+  $('reloj').textContent = hhmm(d);
+  $('reloj2').textContent = hhmm(d);
+  const dia = DIAS[d.getDay()];
+  $('fecha').textContent = dia[0].toUpperCase() + dia.slice(1) + ' ' + d.getDate() + ' de ' + MESES[d.getMonth()];
+}
+pintarReloj();
+setInterval(pintarReloj, 1000);
+
+/* ---------------- pantallas ---------------- */
+function mostrar(cual){
+  document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+  $(cual).classList.add('activa');
+}
+
+/* ---------------- la cola de marcas sin subir ---------------- */
+function leerCola(){
+  try { return JSON.parse(localStorage.getItem(LS.cola) || '[]'); } catch (e) { return []; }
+}
+function escribirCola(){
+  anotar(LS.cola, JSON.stringify(cola));
+  pintarEstado();
+}
+function pintarEstado(){
+  const e = $('estado');
+  if (!servidor) { e.textContent = 'Modo demostración'; e.className = 'pastilla aviso'; }
+  else if (cola.length) { e.textContent = cola.length + ' por subir'; e.className = 'pastilla malo'; }
+  else if (!navigator.onLine) { e.textContent = 'Sin internet'; e.className = 'pastilla aviso'; }
+  else { e.textContent = 'Conectado'; e.className = 'pastilla'; }
+  const dc = $('dato-cola');
+  if (dc) dc.innerHTML = cola.length
+    ? '<b>' + cola.length + ' marca(s)</b> esperando subir. La más vieja: ' + cola[0].hora + ' del ' + cola[0].fecha + '.'
+    : 'No hay marcas pendientes. Todo lo marcado está en la planilla.';
+}
+
+/* ---------------- hablarle al servidor ---------------- */
+// Todo va por POST, incluso pedir la lista: la clave viaja en el cuerpo y no en
+// la URL. Una clave en la URL queda escrita en los logs de n8n y de cualquier
+// proxy del camino, y ahí ya no se puede borrar.
+async function pedir(ruta, cuerpo){
+  const url = servidor.replace(/\/+$/,'') + ruta;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ clave: clave }, cuerpo || {}))
+  });
+  if (!r.ok) throw new Error('El servidor respondió ' + r.status);
+  return await r.json();
+}
+
+/* ---------------- la lista de gente ---------------- */
+const DEMO = [
+  { nombre:'Carolina Muñoz', cargo:'Caja',     pin:'1234' },
+  { nombre:'Luis Aravena',   cargo:'Bodega',   pin:'1111' },
+  { nombre:'Fernanda Soto',  cargo:'Atención', pin:'2222' },
+  { nombre:'Pedro Cárcamo',  cargo:'Reparto',  pin:'3333' }
+];
+
+async function traerGente(){
+  if (!servidor) {
+    if (!gente.length) {
+      let guardados = null;
+      try { guardados = JSON.parse(localStorage.getItem(LS.demo) || 'null'); } catch (e) {}
+      gente = (guardados && guardados.length ? guardados : DEMO)
+        .map(p => Object.assign({ dentro:false, desde:'' }, p));
+    }
+    pintarGente();
+    return;
+  }
+  try {
+    const d = await pedir('/gente', {});
+    if (!Array.isArray(d.gente)) throw new Error('Respuesta rara del servidor');
+    gente = d.gente;
+    aplicarCola();
+    pintarGente();
+  } catch (e) {
+    // sin conexión se sigue trabajando con la última lista que se alcanzó a ver
+    pintarEstado();
+    if (!gente.length) {
+      $('gente').innerHTML = '<div class="vacio">No se pudo traer la lista de trabajadores.<br>' +
+        'Revisa el internet o el servidor en ⚙.</div>';
+    }
+  }
+}
+
+// las marcas que están en la cola todavía no las sabe el servidor: se reflejan igual
+function aplicarCola(){
+  cola.forEach(m => {
+    const p = gente.find(g => g.nombre === m.nombre);
+    if (p) { p.dentro = (m.tipo === 'entrada'); p.desde = m.hora; }
+  });
+}
+
+function iniciales(nombre){
+  return nombre.trim().split(/\s+/).slice(0,2).map(p => p[0]).join('').toUpperCase();
+}
+
+function pintarGente(){
+  pintarEstado();
+  const cont = $('gente');
+  if (!gente.length) { cont.innerHTML = '<div class="vacio">No hay trabajadores cargados todavía.</div>'; return; }
+  cont.innerHTML = '';
+  gente.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'tarjeta' + (p.dentro ? ' dentro' : '');
+    b.innerHTML = '<span class="ini">' + iniciales(p.nombre) + '</span><span>' +
+      '<span class="nom"></span><span class="sub"></span></span>';
+    b.querySelector('.nom').textContent = p.nombre;
+    b.querySelector('.sub').textContent = p.dentro
+      ? 'Adentro desde las ' + (p.desde || '--:--')
+      : (p.cargo || 'Afuera');
+    b.addEventListener('click', () => abrirPin(p));
+    cont.appendChild(b);
+  });
+  const dentro = gente.filter(p => p.dentro).length;
+  $('pie-dentro').textContent = dentro === 0 ? 'No hay nadie adentro'
+    : (dentro === 1 ? '1 persona adentro' : dentro + ' personas adentro');
+}
+
+/* ---------------- el PIN ---------------- */
+function abrirPin(p){
+  elegido = p; pin = '';
+  $('pin-nombre').textContent = p.nombre;
+  const esEntrada = !p.dentro;
+  $('pin-accion').textContent = esEntrada ? 'Vas a marcar ENTRADA' : 'Vas a marcar SALIDA';
+  $('pin-accion').className = 'accion ' + (esEntrada ? 'entrada' : 'salida');
+  $('pin-error').textContent = ' ';
+  pintarPuntos();
+  mostrar('pantalla-pin');
+}
+
+function pintarPuntos(){
+  const c = $('puntos'); c.innerHTML = '';
+  for (let i = 0; i < CONFIG.largoPin; i++) {
+    const d = document.createElement('span');
+    d.className = 'punto' + (i < pin.length ? ' lleno' : '');
+    c.appendChild(d);
+  }
+}
+
+(function armarTeclado(){
+  const t = $('teclas');
+  ['1','2','3','4','5','6','7','8','9','borrar','0','cancelar'].forEach(k => {
+    const b = document.createElement('button');
+    if (k === 'borrar') { b.textContent = '←'; b.className = 'chico'; b.onclick = () => { pin = pin.slice(0,-1); pintarPuntos(); }; }
+    else if (k === 'cancelar') { b.textContent = 'Cancelar'; b.className = 'chico'; b.onclick = volver; }
+    else { b.textContent = k; b.onclick = () => tecla(k); }
+    t.appendChild(b);
+  });
+})();
+
+function tecla(n){
+  if (pin.length >= CONFIG.largoPin) return;
+  pin += n;
+  pintarPuntos();
+  if (pin.length === CONFIG.largoPin) setTimeout(marcar, 120);
+}
+
+function volver(){ elegido = null; pin = ''; mostrar('pantalla-gente'); }
+$('btn-volver').addEventListener('click', volver);
+
+function falla(msg){
+  $('pin-error').textContent = msg;
+  pin = ''; pintarPuntos();
+  const p = $('puntos');
+  p.classList.remove('sacude'); void p.offsetWidth; p.classList.add('sacude');
+}
+
+/* ---------------- marcar ---------------- */
+async function marcar(){
+  const p = elegido, elPin = pin;
+  const ahora = new Date();
+  const marca = {
+    nombre: p.nombre,
+    pin: elPin,
+    tipo: p.dentro ? 'salida' : 'entrada',
+    fecha: ahora.toISOString().slice(0,10),
+    hora: hhmm(ahora),
+    origen: 'tablet'
+  };
+
+  if (!servidor) {                                   // modo demostración
+    if (String(p.pin) !== elPin) return falla('Ese PIN no es. Prueba de nuevo.');
+    p.dentro = !p.dentro; p.desde = marca.hora;
+    pintarGente();
+    return confirmar(p.nombre, marca.tipo, marca.hora, 'Modo demostración: esto no se guardó en ninguna parte.');
+  }
+
+  $('pin-error').textContent = 'Marcando…';
+  try {
+    const r = await pedir('/marca', marca);
+    if (!r.ok) return falla(r.mensaje || 'No se pudo marcar.');
+    p.dentro = (r.tipo === 'entrada'); p.desde = r.hora || marca.hora;
+    pintarGente();
+    confirmar(p.nombre, r.tipo, r.hora || marca.hora, '');
+  } catch (e) {
+    // Sin internet no se puede validar el PIN: se guarda igual y el servidor
+    // decide después. Es preferible una marca por revisar que una marca perdida.
+    cola.push(marca);
+    escribirCola();
+    p.dentro = (marca.tipo === 'entrada'); p.desde = marca.hora;
+    pintarGente();
+    confirmar(p.nombre, marca.tipo, marca.hora,
+      'Sin internet: quedó guardada en la tablet y sube sola cuando vuelva.');
+  }
+}
+
+function confirmar(nombre, tipo, hora, nota){
+  $('listo').className = 'pantalla activa ' + tipo;
+  document.querySelectorAll('.pantalla').forEach(p => { if (p.id !== 'listo') p.classList.remove('activa'); });
+  $('listo-quien').textContent = nombre;
+  $('listo-que').textContent = tipo === 'entrada' ? 'Entrada registrada' : 'Salida registrada';
+  $('listo-hora').textContent = hora;
+  $('listo-nota').textContent = nota || (tipo === 'entrada' ? '¡Buen turno!' : '¡Hasta mañana!');
+  clearTimeout(temporizador);
+  temporizador = setTimeout(() => { elegido = null; pin = ''; mostrar('pantalla-gente'); },
+    CONFIG.segundosConfirmacion * 1000);
+}
+$('listo').addEventListener('click', () => { clearTimeout(temporizador); elegido = null; pin = ''; mostrar('pantalla-gente'); });
+
+/* ---------------- subir lo que quedó pendiente ---------------- */
+async function subirCola(){
+  if (subiendo || !servidor || !cola.length || !navigator.onLine) return;
+  subiendo = true;
+  try {
+    while (cola.length) {
+      const m = Object.assign({}, cola[0], { origen: 'pendiente' });
+      const r = await pedir('/marca', m);
+      if (!r.ok && r.motivo !== 'repetida') break;  // PIN malo: se deja para revisar a mano
+      cola.shift();
+      escribirCola();
+    }
+  } catch (e) { /* sigue sin internet, se reintenta después */ }
+  subiendo = false;
+  pintarEstado();
+}
+window.addEventListener('online', () => { subirCola(); traerGente(); });
+window.addEventListener('offline', pintarEstado);
+
+/* ---------------- trabajadores ---------------- */
+// La lista sale de la misma consulta que usa el kiosco: no hay dos verdades.
+// Dar de baja no borra la fila, le pone Activo = NO, igual que el panel del gimnasio:
+// borrar a alguien que ya marcó dejaría marcas de un trabajador que "no existe".
+function pintarTrabajadores(){
+  const cont = $('lista-trabajadores');
+  if (!cont) return;
+  cont.innerHTML = '';
+  if (!gente.length) {
+    cont.innerHTML = '<div class="dato">Todavía no hay nadie cargado.</div>';
+    return;
+  }
+  gente.forEach(p => {
+    const f = document.createElement('div');
+    f.className = 'fila';
+    f.innerHTML = '<span class="quien"></span><button type="button">Dar de baja</button>';
+    f.querySelector('.quien').innerHTML = '<span></span><small></small>';
+    f.querySelector('.quien span').textContent = p.nombre;
+    f.querySelector('.quien small').textContent = p.cargo || 'Sin cargo';
+    f.querySelector('button').addEventListener('click', () => darDeBaja(p));
+    cont.appendChild(f);
+  });
+}
+
+function avisar(texto, bien){
+  const a = $('aviso-trabajador');
+  a.textContent = texto;
+  a.className = 'aviso ' + (bien ? 'bien' : 'mal');
+}
+
+function guardarDemo(){
+  try { localStorage.setItem(LS.demo, JSON.stringify(gente)); } catch (e) {}
+}
+
+async function agregarTrabajador(){
+  const nombre = $('nuevo-nombre').value.trim();
+  const pinNuevo = $('nuevo-pin').value.trim();
+  const cargo = $('nuevo-cargo').value.trim();
+  if (nombre.length < 3) return avisar('Escribe el nombre completo.', false);
+  if (!/^[0-9]{4}$/.test(pinNuevo)) return avisar('El PIN son 4 números, ni más ni menos.', false);
+  if (gente.some(p => p.nombre.trim().toLowerCase() === nombre.toLowerCase()))
+    return avisar('Ya hay alguien con ese nombre.', false);
+
+  if (!servidor) {                                   // modo demostración
+    gente.push({ nombre, cargo, pin: pinNuevo, dentro:false, desde:'' });
+    guardarDemo(); pintarGente(); pintarTrabajadores();
+    $('nuevo-nombre').value = ''; $('nuevo-pin').value = ''; $('nuevo-cargo').value = '';
+    return avisar(nombre + ' agregado (modo demostración: no se guardó en ninguna parte).', true);
+  }
+
+  avisar('Guardando…', true);
+  try {
+    const r = await pedir('/trabajador', { accion:'agregar', nombre, pin:pinNuevo, cargo });
+    if (!r.ok) return avisar(r.mensaje || 'No se pudo agregar.', false);
+    $('nuevo-nombre').value = ''; $('nuevo-pin').value = ''; $('nuevo-cargo').value = '';
+    avisar(nombre + ' quedó en la planilla y ya aparece en la tablet.', true);
+    await traerGente(); pintarTrabajadores();
+  } catch (e) {
+    // Sin internet NO se encola: un trabajador a medio crear es peor que uno no creado.
+    avisar('Sin conexión con el servidor. No se agregó: inténtalo cuando vuelva el internet.', false);
+  }
+}
+
+async function darDeBaja(p){
+  if (!confirm('¿Dar de baja a ' + p.nombre + '? Deja de aparecer en la tablet, pero sus marcas quedan guardadas.')) return;
+  if (!servidor) {
+    gente = gente.filter(g => g.nombre !== p.nombre);
+    guardarDemo(); pintarGente(); pintarTrabajadores();
+    return avisar(p.nombre + ' dado de baja (modo demostración).', true);
+  }
+  avisar('Dando de baja…', true);
+  try {
+    const r = await pedir('/trabajador', { accion:'baja', nombre: p.nombre });
+    if (!r.ok) return avisar(r.mensaje || 'No se pudo dar de baja.', false);
+    avisar(p.nombre + ' ya no aparece en la tablet. Para reactivarlo, en la planilla pon Activo = SI.', true);
+    await traerGente(); pintarTrabajadores();
+  } catch (e) {
+    avisar('Sin conexión con el servidor. No se dio de baja.', false);
+  }
+}
+
+$('btn-agregar').addEventListener('click', agregarTrabajador);
+
+/* ---------------- ajustes ---------------- */
+$('btn-ajustes').addEventListener('click', () => {
+  const pideClave = !!clave;            // sin clave configurada no hay nada que pedir
+  $('ajustes-clave').hidden = !pideClave;
+  $('ajustes-cuerpo').hidden = pideClave;
+  $('clave-entrar').value = '';
+  $('ajustes-error').textContent = ' ';
+  $('servidor').value = servidor;
+  $('clave').value = clave;
+  pintarEstado();
+  pintarTrabajadores();
+  $('aviso-trabajador').textContent = ' ';
+  mostrar('ajustes');
+});
+$('btn-cerrar-ajustes').addEventListener('click', () => mostrar('pantalla-gente'));
+$('btn-entrar-ajustes').addEventListener('click', () => {
+  if (clave === '' || $('clave-entrar').value === clave) {
+    $('ajustes-clave').hidden = true; $('ajustes-cuerpo').hidden = false;
+  } else {
+    $('ajustes-error').textContent = 'Clave incorrecta.';
+  }
+});
+$('btn-guardar').addEventListener('click', () => {
+  anotar(LS.servidor, $('servidor').value.trim());
+  anotar(LS.clave, $('clave').value);
+  location.reload();
+});
+$('btn-refrescar').addEventListener('click', async () => { await traerGente(); pintarTrabajadores(); });
+$('btn-subir-cola').addEventListener('click', async () => { await subirCola(); pintarEstado(); });
+$('btn-pantalla').addEventListener('click', () => {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+});
+
+/* ---------------- que la tablet no se apague ni se vaya sola ---------------- */
+let cerrojo = null;
+async function mantenerDespierta(){
+  try { if ('wakeLock' in navigator && !cerrojo) cerrojo = await navigator.wakeLock.request('screen'); }
+  catch (e) {}
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') { cerrojo = null; mantenerDespierta(); traerGente(); subirCola(); }
+});
+document.addEventListener('gesturestart', e => e.preventDefault());   // sin zoom con dos dedos
+document.addEventListener('contextmenu', e => e.preventDefault());    // sin menú al dejar el dedo
+
+/* ---------------- arranque ---------------- */
+mantenerDespierta();
+traerGente();
+subirCola();
+setInterval(() => { traerGente(); subirCola(); }, CONFIG.refrescoSegundos * 1000);
+</script>
+</body>
+</html>
