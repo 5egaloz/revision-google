@@ -203,6 +203,7 @@
 
       <label for="servidor">Servidor (webhook de n8n)</label>
       <input type="text" id="servidor" autocomplete="off" spellcheck="false" placeholder="Vacío = modo demostración">
+      <button class="btn claro" id="btn-produccion">Poner el servidor de producción</button>
 
       <label for="clave">Clave del servidor</label>
       <input type="password" id="clave" autocomplete="off" placeholder="La misma que está en n8n">
@@ -255,7 +256,7 @@
    tocar el código; lo que se guarda ahí manda sobre esto.
    ============================================================ */
 const CONFIG = {
-  api: '',   // vacío = demostración. La URL del servidor se pega en ⚙ Ajustes.
+  api: '',   // vacío = demostración. El botón de ⚙ pone el servidor de producción.
   refrescoSegundos: 60,     // cada cuánto se vuelve a preguntar quién está adentro
   segundosConfirmacion: 5,  // cuánto queda la pantalla verde/naranja antes de volver
   largoPin: 4
@@ -657,6 +658,12 @@ $('btn-entrar-ajustes').addEventListener('click', () => {
     $('ajustes-error').textContent = 'Clave incorrecta.';
   }
 });
+// Un toque en vez de escribir una URL larga con el dedo en una tablet.
+$('btn-produccion').addEventListener('click', () => {
+  $('servidor').value = 'https://n8n.146-181-46-2.sslip.io/webhook/asistencia';
+  $('clave').focus();
+});
+
 $('btn-guardar').addEventListener('click', () => {
   anotar(LS.servidor, $('servidor').value.trim());
   anotar(LS.clave, $('clave').value);
