@@ -256,7 +256,7 @@
    tocar el código; lo que se guarda ahí manda sobre esto.
    ============================================================ */
 const CONFIG = {
-  api: '',   // vacío = demostración. El botón de ⚙ pone el servidor de producción.
+  api: 'https://n8n.146-181-46-2.sslip.io/webhook/asistencia',
   refrescoSegundos: 60,     // cada cuánto se vuelve a preguntar quién está adentro
   segundosConfirmacion: 5,  // cuánto queda la pantalla verde/naranja antes de volver
   largoPin: 4
@@ -281,6 +281,7 @@ let pin = '';
 let cola = leerCola();     // marcas que no alcanzaron a subir
 let temporizador = null;
 let subiendo = false;
+let servidorVivo = null;   // null = todavía no se sabe; false = no contesta
 
 /* ---------------- reloj ---------------- */
 const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -313,6 +314,7 @@ function escribirCola(){
 function pintarEstado(){
   const e = $('estado');
   if (!servidor) { e.textContent = 'Modo demostración'; e.className = 'pastilla aviso'; }
+  else if (servidorVivo === false) { e.textContent = 'Sin servidor'; e.className = 'pastilla malo'; }
   else if (cola.length) { e.textContent = cola.length + ' por subir'; e.className = 'pastilla malo'; }
   else if (!navigator.onLine) { e.textContent = 'Sin internet'; e.className = 'pastilla aviso'; }
   else { e.textContent = 'Conectado'; e.className = 'pastilla'; }
@@ -359,14 +361,17 @@ async function traerGente(){
     const d = await pedir('/gente', {});
     if (!Array.isArray(d.gente)) throw new Error('Respuesta rara del servidor');
     gente = d.gente;
+    servidorVivo = true;
     aplicarCola();
     pintarGente();
   } catch (e) {
     // sin conexión se sigue trabajando con la última lista que se alcanzó a ver
+    servidorVivo = false;
     pintarEstado();
     if (!gente.length) {
-      $('gente').innerHTML = '<div class="vacio">No se pudo traer la lista de trabajadores.<br>' +
-        'Revisa el internet o el servidor en ⚙.</div>';
+      $('gente').innerHTML = '<div class="vacio"><b>No hay conexión con el servidor.</b><br><br>' +
+        'La tablet no puede traer la lista de trabajadores, así que nadie puede marcar.<br>' +
+        'Revisa el internet del local; si el internet está bien, revisa el servidor en ⚙.</div>';
     }
   }
 }
