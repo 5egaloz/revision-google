@@ -1,6 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.dataset.mov="on";</script>
-<title>Automotora Cordillera</title>
+
+<title>Automotora Cordillera · Vehículos en Coyhaique, Aysén</title>
+<meta name="description" content="Camionetas, SUV y citycar en Coyhaique. Vea el stock al día con año, kilometraje y precio, y consulte por WhatsApp el auto que le interesa.">
+<link rel="canonical" href="https://5egaloz.github.io/revision-google/automotora/">
+<meta name="theme-color" content="#0D0C0A">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+<!-- Así se ve el enlace cuando lo pegan en WhatsApp: si esto falta, sale un link pelado. -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CL">
+<meta property="og:site_name" content="Automotora Cordillera">
+<meta property="og:title" content="Automotora Cordillera · Coyhaique">
+<meta property="og:description" content="El stock al día: año, kilometraje y precio de cada vehículo, y la consulta directa por WhatsApp.">
+<meta property="og:url" content="https://5egaloz.github.io/revision-google/automotora/">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- Solo lo que la página realmente usa: nada de scripts ni imágenes de otro host. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230D0C0A'/%3E%3Cpath d='M4 20h24M7 20v-4l3-5h12l3 5v4' stroke='%23E4AC3B' stroke-width='2.4' fill='none' stroke-linejoin='round'/%3E%3Ccircle cx='10' cy='22' r='2.4' fill='%23E4AC3B'/%3E%3Ccircle cx='22' cy='22' r='2.4' fill='%23E4AC3B'/%3E%3C/svg%3E">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Archivo:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap">
@@ -483,6 +506,7 @@ tr:last-child td{border-bottom:none}
     </div>
     <h2>Panel del dueño</h2>
     <p class="panel-sub">Esto es lo que separa una vitrina de una página muerta. Marque un auto como vendido y mire el patio de arriba: cambia al instante.</p>
+    <p class="panel-sub" id="avisoRemoto" hidden><strong>Ojo:</strong> está viendo los cambios guardados en este navegador, no el stock publicado. Use «Volver al stock de ejemplo» para ver lo que ve el público.</p>
 
     <div class="panel-caja">
       <div class="tabla-wrap">
@@ -555,18 +579,78 @@ const STOCK_BASE = [
 ];
 
 const LLAVE = "automotora_demo_v4";
+
+/* Un registro que viene de afuera puede traer cualquier cosa. Acá se le da
+   forma antes de que lo toque el resto del programa: tipos correctos, textos
+   recortados y nada de campos sueltos. */
+const TIPOS = ["Camioneta","SUV","Citycar"];
+const enLista = (v, lista) => lista.includes(String(v)) ? String(v) : lista[0];
+const texto = (v, largo) => String(v == null ? "" : v).slice(0, largo);
+
+function normalizar(a, i){
+  if(!a || typeof a !== "object") return null;
+  const nom = texto(a.nom, 80).trim();
+  if(!nom) return null;
+  return {
+    id: numero(a.id, 0) || Date.now() + i,
+    foto: texto(a.foto, 40),
+    fotoData: fotoSegura(a.fotoData) || undefined,
+    nom,
+    ano: Math.min(2100, Math.max(1900, numero(a.ano, 2000))),
+    km: Math.max(0, numero(a.km, 0)),
+    precio: Math.max(0, numero(a.precio, 0)),
+    tipo: enLista(a.tipo, TIPOS),
+    comb: enLista(a.comb, ["Diésel","Bencina","Híbrido","Eléctrico"]),
+    trans: enLista(a.trans, ["Mecánico","Automático"]),
+    trac: enLista(a.trac, ["4x4","4x2","AWD"]),
+    vendido: a.vendido === true,
+    desc: texto(a.desc, 600)
+  };
+}
+
+const normalizarLista = d =>
+  Array.isArray(d) ? d.map(normalizar).filter(Boolean).slice(0, 300) : [];
+
 let stock = cargar();
 
 function cargar(){
   try{
     const g = localStorage.getItem(LLAVE);
-    if(g){ const d = JSON.parse(g); if(Array.isArray(d) && d.length) return d; }
+    if(g){
+      const d = normalizarLista(JSON.parse(g));
+      if(d.length) return d;
+    }
   }catch(e){}
   return STOCK_BASE.map(a => ({...a}));
 }
+
+/* ── El puente hacia el sitio real ──
+   Si junto a esta página hay un stock.json publicado, ese manda: es el stock
+   que ve todo el mundo. Sin él la página sigue funcionando con los datos de
+   ejemplo, así que la demo no depende de nada.
+   Acá es donde entra lo que llegue del bot de WhatsApp: el flujo escribe
+   stock.json y la vitrina lo refleja sin tocar el HTML. */
+let hayLocal = false;
+try{ hayLocal = !!localStorage.getItem(LLAVE); }catch(e){}
+
+fetch("stock.json", {cache:"no-store"})
+  .then(r => r.ok ? r.json() : null)
+  .then(d => {
+    const remoto = normalizarLista(d);
+    if(!remoto.length) return;
+    if(hayLocal){
+      const n = document.getElementById("avisoRemoto");
+      if(n) n.hidden = false;
+      return;                      // no le pisamos los cambios al dueño
+    }
+    stock = remoto;
+    pintarTodo();
+  })
+  .catch(() => {});
 function guardar(){
   try{
     localStorage.setItem(LLAVE, JSON.stringify(stock));
+    hayLocal = true;
   }catch(e){
     const a = document.getElementById("avisoAlta");
     if(a) a.textContent = "Se publicó, pero el navegador no alcanzó a guardarlo: se pierde al recargar.";
@@ -574,16 +658,38 @@ function guardar(){
 }
 
 /* ================= FORMATO ================= */
-const plata = n => n.toLocaleString("es-CL");
-const kms   = n => n.toLocaleString("es-CL") + " km";
+/* Todo texto que venga de fuera (panel, stock.json, y mañana el bot de
+   WhatsApp) pasa por acá antes de tocar innerHTML. Sin esto, un modelo
+   escrito como  Hilux <img src=x onerror=...>  se ejecuta en el navegador
+   de todos los que miren la vitrina. */
+const esc = v => String(v == null ? "" : v)
+  .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+
+/* Una foto solo puede ser un data: de imagen o un archivo del propio sitio.
+   Corta de raíz un  javascript:  disfrazado de foto. */
+const fotoSegura = src => {
+  const s = String(src || "").trim();
+  if(/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(s)) return s;
+  if(/^(?!\/\/)[\w./-]+\.(png|jpe?g|webp|avif)$/i.test(s)) return s;
+  return null;
+};
+
+const numero = (v, porDefecto = 0) => {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : porDefecto;
+};
+
+const plata = n => numero(n).toLocaleString("es-CL");
+const kms   = n => numero(n).toLocaleString("es-CL") + " km";
 /* El odómetro: cada dígito en su celda, como el contador mecánico del tablero. */
-const odometro = n => n.toLocaleString("es-CL").split("")
+const odometro = n => numero(n).toLocaleString("es-CL").split("")
   .map(c => /\d/.test(c) ? `<span>${c}</span>` : `<span class="sep">${c}</span>`).join("");
 
 function medio(a){
-  const src = a.fotoData || FOTOS[a.foto];
+  const src = fotoSegura(a.fotoData || FOTOS[a.foto]);
   return src
-    ? `<img src="${src}" alt="${a.nom} ${a.ano}" loading="lazy">`
+    ? `<img src="${src}" alt="${esc(a.nom)} ${esc(a.ano)}" loading="lazy" decoding="async">`
     : '<div class="sinfoto">Sin foto</div>';
 }
 
@@ -639,14 +745,14 @@ function pintarVitrina(){
         ${a.vendido ? '<span class="timbre">Vendido</span>' : ""}
       </div>
       <div class="lote-datos">
-        <div class="lote-tit">${a.nom} <span>${a.ano}</span></div>
+        <div class="lote-tit">${esc(a.nom)} <span>${esc(a.ano)}</span></div>
         <div class="odo">
           <span class="odo-l">Recorrido</span>
           <span class="odo-n">${odometro(a.km)}</span>
           <span class="odo-u">km</span>
         </div>
         <div class="fichas">
-          <div>${a.comb}</div><div>${a.trans}</div><div>${a.trac}</div>
+          <div>${esc(a.comb)}</div><div>${esc(a.trans)}</div><div>${esc(a.trac)}</div>
         </div>
         <div class="precio"><i>$</i>${plata(a.precio)}</div>
       </div>`;
@@ -668,7 +774,7 @@ function pintarVitrina(){
 function abrirFicha(id){
   const a = stock.find(x => x.id === id);
   if(!a) return;
-  const msg = `Hola, vi el ${a.nom} ${a.ano} en su sitio ($${plata(a.precio)}). ¿Sigue disponible? ¿Reciben auto en parte de pago?`;
+  const msg = esc(`Hola, vi el ${a.nom} ${a.ano} en su sitio ($${plata(a.precio)}). ¿Sigue disponible? ¿Reciben auto en parte de pago?`);
   document.getElementById("fichaCaja").innerHTML = `
     <div class="ficha-foto">
       ${medio(a)}
@@ -676,16 +782,16 @@ function abrirFicha(id){
     </div>
     <div class="ficha-cuerpo">
       <div>
-        <h2 class="ficha-tit" id="fichaTit">${a.nom} ${a.ano}</h2>
+        <h2 class="ficha-tit" id="fichaTit">${esc(a.nom)} ${esc(a.ano)}</h2>
         <div class="ficha-precio">$${plata(a.precio)}</div>
       </div>
       <dl class="tabla">
         <div class="celda"><dt>Recorrido</dt><dd>${kms(a.km)}</dd></div>
-        <div class="celda"><dt>Combustible</dt><dd>${a.comb}</dd></div>
-        <div class="celda"><dt>Transmisión</dt><dd>${a.trans}</dd></div>
-        <div class="celda"><dt>Tracción</dt><dd>${a.trac}</dd></div>
+        <div class="celda"><dt>Combustible</dt><dd>${esc(a.comb)}</dd></div>
+        <div class="celda"><dt>Transmisión</dt><dd>${esc(a.trans)}</dd></div>
+        <div class="celda"><dt>Tracción</dt><dd>${esc(a.trac)}</dd></div>
       </dl>
-      <p class="ficha-desc">${a.desc}</p>
+      <p class="ficha-desc">${esc(a.desc)}</p>
       <div class="acciones">
         <button class="btn" id="btnWa"${a.vendido ? " disabled style=\"opacity:.45;cursor:default\"" : ""}>
           ${a.vendido ? "Ya se vendió" : "Consultar por WhatsApp"}
@@ -721,7 +827,7 @@ function pintarPanel(){
   stock.forEach(a => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="td-nom">${a.nom} <span style="color:var(--grafito);font-weight:400">${a.ano}</span></td>
+      <td class="td-nom">${esc(a.nom)} <span style="color:var(--grafito);font-weight:400">${esc(a.ano)}</span></td>
       <td class="td-num">${kms(a.km)}</td>
       <td class="td-num">$${plata(a.precio)}</td>
       <td><span class="estado ${a.vendido ? "vend" : "disp"}">${a.vendido ? "Vendido" : "Disponible"}</span></td>
@@ -764,8 +870,14 @@ document.getElementById("btnAgregar").addEventListener("click", () => {
 });
 
 document.getElementById("btnReset").addEventListener("click", () => {
+  /* Borra el borrador de este navegador, no lo reemplaza: así vuelve a mandar
+     el stock publicado y el aviso de arriba desaparece. */
+  try{ localStorage.removeItem(LLAVE); }catch(e){}
+  hayLocal = false;
+  const aviso = document.getElementById("avisoRemoto");
+  if(aviso) aviso.hidden = true;
   stock = STOCK_BASE.map(a => ({...a}));
-  guardar(); pintarTodo();
+  pintarTodo();
   document.getElementById("avisoAlta").textContent = "Stock de ejemplo restaurado.";
 });
 
@@ -883,14 +995,32 @@ document.getElementById("irAcceso").addEventListener("click", () => {
   document.getElementById("clave").focus();
 });
 
+/* Freno a los intentos. No convierte esto en seguridad —la clave sigue a la
+   vista en el código— pero evita que alguien la busque a mano probando. */
+let fallos = 0, bloqueadoHasta = 0;
+
 document.getElementById("formAcceso").addEventListener("submit", e => {
   e.preventDefault();
   const err = document.getElementById("accesoErr");
-  if(document.getElementById("clave").value.trim() !== CLAVE_DEMO){
-    err.textContent = "Clave incorrecta.";
-    document.getElementById("clave").value = "";
+  const ahora = Date.now();
+
+  if(ahora < bloqueadoHasta){
+    err.textContent = `Demasiados intentos. Espere ${Math.ceil((bloqueadoHasta - ahora)/1000)} segundos.`;
     return;
   }
+  if(document.getElementById("clave").value.trim() !== CLAVE_DEMO){
+    fallos++;
+    document.getElementById("clave").value = "";
+    if(fallos >= 5){
+      bloqueadoHasta = ahora + 30000;
+      fallos = 0;
+      err.textContent = "Demasiados intentos. Espere 30 segundos.";
+    }else{
+      err.textContent = "Clave incorrecta.";
+    }
+    return;
+  }
+  fallos = 0;
   err.textContent = "";
   try{ sessionStorage.setItem(SESION, "1"); }catch(e){}
   abrirPanel();
@@ -914,3 +1044,5 @@ function pintarTodo(){
 }
 pintarTodo();
 </script>
+
+</html>

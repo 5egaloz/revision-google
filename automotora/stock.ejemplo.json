@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1735000000000,
+    "nom": "Toyota Hilux 4x4 SR",
+    "ano": 2019,
+    "km": 98000,
+    "precio": 24900000,
+    "tipo": "Camioneta",
+    "comb": "Diésel",
+    "trans": "Mecánico",
+    "trac": "4x4",
+    "vendido": false,
+    "desc": "Mantenciones al día. Recibimos vehículo en parte de pago.",
+    "fotoData": null
+  }
+]
