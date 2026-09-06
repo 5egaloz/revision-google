@@ -19,6 +19,7 @@
     --tipo:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
   html,body{height:100%}
   body{
     background:var(--fondo);color:var(--texto);font-family:var(--tipo);
@@ -77,6 +78,13 @@
     font-size:2.2rem;font-weight:700}
   .teclas button:active{background:#2b3a4d}
   .teclas .chico{font-size:1.1rem;font-weight:700;color:var(--texto-2)}
+  .botonazos{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+  .botonazo{min-width:280px;padding:38px 32px;border-radius:22px;font-size:1.9rem;font-weight:700;
+    border:2px solid transparent}
+  .botonazo:active{transform:scale(.97)}
+  .botonazo.entrada{background:var(--verde-fuerte);color:#fff}
+  .botonazo.salida{background:var(--naranja-fuerte);color:#fff}
+  .botonazo.apagado{background:transparent;color:var(--texto-2);border-color:var(--linea)}
   .error{min-height:32px;font-size:1.15rem;font-weight:700;color:#ffa494;text-align:center}
   .sacude{animation:sacude .3s}
   @keyframes sacude{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
@@ -155,6 +163,10 @@
   <div class="pin">
     <h2 id="pin-nombre">&nbsp;</h2>
     <span class="accion" id="pin-accion">&nbsp;</span>
+    <div class="botonazos" id="botonazos" hidden>
+      <button type="button" class="botonazo entrada" id="btn-entrada">Marcar entrada</button>
+      <button type="button" class="botonazo salida" id="btn-salida">Marcar salida</button>
+    </div>
     <div class="puntos" id="puntos"></div>
     <div class="error" id="pin-error">&nbsp;</div>
     <div class="teclas" id="teclas"></div>
@@ -210,7 +222,7 @@
           <input type="text" id="nuevo-nombre" autocomplete="off" placeholder="Ej: Carolina Muñoz">
         </div>
         <div>
-          <label for="nuevo-pin">PIN de 4 dígitos</label>
+          <label for="nuevo-pin">PIN de 4 dígitos (déjalo en blanco y marca sin clave)</label>
           <input type="text" id="nuevo-pin" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="1234">
         </div>
       </div>
@@ -225,6 +237,9 @@
       <div class="dato">
         <b>Modo demostración:</b> si el campo Servidor está vacío, la tablet inventa
         trabajadores y no manda nada a ninguna parte. Sirve para mostrarlo sin riesgo.<br><br>
+        <b>Sin PIN:</b> a quien no tenga PIN, la tablet le muestra dos botones —
+        <i>Marcar entrada</i> y <i>Marcar salida</i>— y nada más. Con un solo trabajador
+        pedirle una clave no protege de nadie. Cuando sean varios, ponles PIN.<br><br>
         <b>Si se corta el internet:</b> las marcas se guardan en la tablet y suben solas
         cuando vuelve. No se pierde ninguna mientras no se borren los datos del navegador.
       </div>
@@ -322,11 +337,10 @@ async function pedir(ruta, cuerpo){
 }
 
 /* ---------------- la lista de gente ---------------- */
+// Un solo trabajador y sin PIN: así se ve un negocio chico el primer día.
+// Con el PIN en blanco la tablet no pide teclado, muestra los dos botones y listo.
 const DEMO = [
-  { nombre:'Carolina Muñoz', cargo:'Caja',     pin:'1234' },
-  { nombre:'Luis Aravena',   cargo:'Bodega',   pin:'1111' },
-  { nombre:'Fernanda Soto',  cargo:'Atención', pin:'2222' },
-  { nombre:'Pedro Cárcamo',  cargo:'Reparto',  pin:'3333' }
+  { nombre:'Trabajador 1', cargo:'', pin:'' }
 ];
 
 async function traerGente(){
@@ -391,16 +405,41 @@ function pintarGente(){
 }
 
 /* ---------------- el PIN ---------------- */
+// Quien no tiene PIN en la planilla marca con dos botones grandes y nada mas.
+// Es lo que sirve cuando hay un solo trabajador: pedirle una clave a la unica
+// persona del local no protege de nadie, solo estorba.
+function sinPin(p){ return !String(p.pin || '').trim(); }
+
 function abrirPin(p){
   elegido = p; pin = '';
   $('pin-nombre').textContent = p.nombre;
   const esEntrada = !p.dentro;
-  $('pin-accion').textContent = esEntrada ? 'Vas a marcar ENTRADA' : 'Vas a marcar SALIDA';
-  $('pin-accion').className = 'accion ' + (esEntrada ? 'entrada' : 'salida');
   $('pin-error').textContent = ' ';
-  pintarPuntos();
+
+  if (sinPin(p)) {
+    $('pin-accion').textContent = p.dentro
+      ? 'Está adentro desde las ' + (p.desde || '--:--')
+      : 'Todavía no marca entrada hoy';
+    $('pin-accion').className = 'accion ' + (esEntrada ? 'entrada' : 'salida');
+    // Los dos botones quedan siempre disponibles; el que corresponde va encendido.
+    $('btn-entrada').className = 'botonazo ' + (esEntrada ? 'entrada' : 'apagado');
+    $('btn-salida').className = 'botonazo ' + (esEntrada ? 'apagado' : 'salida');
+    $('botonazos').hidden = false;
+    $('puntos').hidden = true;
+    $('teclas').hidden = true;
+  } else {
+    $('pin-accion').textContent = esEntrada ? 'Vas a marcar ENTRADA' : 'Vas a marcar SALIDA';
+    $('pin-accion').className = 'accion ' + (esEntrada ? 'entrada' : 'salida');
+    $('botonazos').hidden = true;
+    $('puntos').hidden = false;
+    $('teclas').hidden = false;
+    pintarPuntos();
+  }
   mostrar('pantalla-pin');
 }
+
+$('btn-entrada').addEventListener('click', () => marcar('entrada'));
+$('btn-salida').addEventListener('click', () => marcar('salida'));
 
 function pintarPuntos(){
   const c = $('puntos'); c.innerHTML = '';
@@ -440,25 +479,27 @@ function falla(msg){
 }
 
 /* ---------------- marcar ---------------- */
-async function marcar(){
+// tipoPedido llega solo cuando la persona apretó uno de los dos botones. Con PIN,
+// el tipo lo decide el servidor mirando la última marca del día.
+async function marcar(tipoPedido){
   const p = elegido, elPin = pin;
   const ahora = new Date();
   const marca = {
     nombre: p.nombre,
     pin: elPin,
-    tipo: p.dentro ? 'salida' : 'entrada',
+    tipo: tipoPedido || (p.dentro ? 'salida' : 'entrada'),
+    forzado: !!tipoPedido,
     fecha: ahora.toISOString().slice(0,10),
     hora: hhmm(ahora),
     origen: 'tablet'
   };
 
   if (!servidor) {                                   // modo demostración
-    if (String(p.pin) !== elPin) return falla('Ese PIN no es. Prueba de nuevo.');
-    p.dentro = !p.dentro; p.desde = marca.hora;
+    if (!sinPin(p) && String(p.pin) !== elPin) return falla('Ese PIN no es. Prueba de nuevo.');
+    p.dentro = (marca.tipo === 'entrada'); p.desde = marca.hora;
     pintarGente();
     return confirmar(p.nombre, marca.tipo, marca.hora, 'Modo demostración: esto no se guardó en ninguna parte.');
   }
-
   $('pin-error').textContent = 'Marcando…';
   try {
     const r = await pedir('/marca', marca);
@@ -549,7 +590,8 @@ async function agregarTrabajador(){
   const pinNuevo = $('nuevo-pin').value.trim();
   const cargo = $('nuevo-cargo').value.trim();
   if (nombre.length < 3) return avisar('Escribe el nombre completo.', false);
-  if (!/^[0-9]{4}$/.test(pinNuevo)) return avisar('El PIN son 4 números, ni más ni menos.', false);
+  // El PIN es opcional: en blanco, esa persona marca con los dos botones grandes.
+  if (pinNuevo && !/^[0-9]{4}$/.test(pinNuevo)) return avisar('El PIN son 4 números, o déjalo en blanco.', false);
   if (gente.some(p => p.nombre.trim().toLowerCase() === nombre.toLowerCase()))
     return avisar('Ya hay alguien con ese nombre.', false);
 
