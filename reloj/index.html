@@ -324,6 +324,15 @@
       <label>Días que trabaja</label>
       <div class="dias" id="j-dias"></div>
 
+      <label for="j-desde">Contar desde (el día que empezó el control)</label>
+      <input type="text" id="j-desde" inputmode="numeric" placeholder="AAAA-MM-DD — vacío = la primera marca">
+
+      <div class="fila" style="margin-top:18px">
+        <span class="quien">Un día de trabajo sin ninguna marca cuenta como inasistencia
+          <small>Se descuenta la jornada completa. El día de hoy nunca se cuenta.</small></span>
+        <button type="button" id="j-faltas" style="color:var(--texto);border-color:var(--linea)">–</button>
+      </div>
+
       <button class="btn" id="btn-guardar-jornada">Guardar el horario</button>
       <div class="aviso" id="aviso-jornada">&nbsp;</div>
 
@@ -359,9 +368,11 @@
         En blanco, cualquiera entra acá.</p>
       <input type="password" id="clave" autocomplete="off" placeholder="Sin clave">
 
-      <h3 class="titulo">Planilla de Google (opcional)</h3>
-      <p class="ayuda">En blanco, todo queda en la tablet y no se manda nada a ninguna parte.
-        Con la dirección del servidor puesta, además sube las marcas a una planilla.</p>
+      <h3 class="titulo">Dónde viven los datos</h3>
+      <p class="ayuda">Con la dirección del servidor puesta, las marcas quedan en la planilla
+        de Google y la tablet solo las copia: si alguien borra los datos del navegador o se
+        cambia de tablet, no se pierde nada. En blanco, los datos viven <b>solo acá</b>.</p>
+      <div class="dato" id="dato-donde">&nbsp;</div>
       <input type="text" id="servidor" autocomplete="off" spellcheck="false" placeholder="Vacío = todo en la tablet">
       <button class="btn claro" id="btn-produccion">Poner el servidor de la planilla</button>
 
@@ -420,7 +431,9 @@ const JORNADA_BASE = {
   colacion: 60,
   tolerancia: 5,
   recargo: 50,
-  dias: [1,2,3,4,5]      // 0 domingo … 6 sábado
+  dias: [1,2,3,4,5],     // 0 domingo … 6 sábado
+  faltas: true,          // un día de trabajo sin ninguna marca cuenta como inasistencia
+  desde: ''              // desde cuándo se cuenta (AAAA-MM-DD). Vacío = la primera marca
 };
 
 const $ = (id) => document.getElementById(id);
@@ -475,11 +488,17 @@ function mostrar(cual){
 function escribirCola(){ anotar(LS.cola, JSON.stringify(cola)); pintarEstado(); }
 function pintarEstado(){
   const e = $('estado');
-  if (!servidor) { e.textContent = 'Guardando en la tablet'; e.className = 'pastilla'; }
-  else if (servidorVivo === false) { e.textContent = 'Sin planilla (guardado acá)'; e.className = 'pastilla aviso'; }
+  if (!servidor) { e.textContent = 'Solo en esta tablet'; e.className = 'pastilla aviso'; }
+  else if (servidorVivo === false) { e.textContent = 'Sin servidor (guardado acá)'; e.className = 'pastilla malo'; }
   else if (cola.length) { e.textContent = cola.length + ' por subir'; e.className = 'pastilla aviso'; }
   else if (!navigator.onLine) { e.textContent = 'Sin internet'; e.className = 'pastilla aviso'; }
   else { e.textContent = 'Conectado'; e.className = 'pastilla'; }
+  const dd = $('dato-donde');
+  if (dd) dd.innerHTML = !servidor
+    ? '⚠️ <b>Los datos viven solo en esta tablet.</b> Si se borran los datos del navegador, se pierde todo. Baja el respaldo seguido, o pon el servidor.'
+    : (servidorVivo === false
+      ? '⚠️ <b>El servidor no contesta.</b> Se está marcando igual y queda guardado acá hasta que vuelva, pero revisa la dirección y el internet.'
+      : '✅ <b>Las marcas están en la planilla de Google.</b> La tablet es una copia: se puede borrar o cambiar sin perder las horas.');
   const dc = $('dato-cola');
   if (dc) dc.innerHTML = !servidor
     ? 'No hay planilla configurada: nada que subir. Todo está guardado en la tablet.'
@@ -523,9 +542,38 @@ async function traerGente(){
   if (!servidor) return;
   try {
     const d = await pedir('/gente', {});
-    if (Array.isArray(d.gente)) servidorVivo = true;
-    pintarEstado();
+    if (Array.isArray(d.gente)) {
+      servidorVivo = true;
+      if (d.gente.length) {
+        trabajadores = d.gente.map(g => ({ nombre:g.nombre, cargo:g.cargo || '', pin:g.pin || '' }));
+        guardarTrabajadores();
+      }
+    }
+    await traerHistorial();
+    armarGente();
+    pintarGente();
   } catch (e) { servidorVivo = false; pintarEstado(); }
+}
+
+// Cuando hay planilla, ELLA es la verdad y la tablet es una copia. Así, si el
+// navegador se borra o se cambia de tablet, las horas siguen estando. Lo único que
+// se conserva de acá es lo que todavía no alcanzó a subir.
+async function traerHistorial(){
+  if (!servidor) return;
+  try {
+    const d = await pedir('/historial', {});
+    if (!Array.isArray(d.marcas)) return;
+    const clave = (m) => m.fecha + '|' + m.hora + '|' + m.nombre + '|' + m.tipo;
+    const vistas = {};
+    const juntas = [];
+    d.marcas.forEach(m => { vistas[clave(m)] = true; juntas.push(m); });
+    cola.forEach(m => { if (!vistas[clave(m)]) { vistas[clave(m)] = true; juntas.push(m); } });
+    marcas = juntas;
+    guardarMarcas();
+    servidorVivo = true;
+    if ($('resumen').classList.contains('activa')) pintarResumen();
+  } catch (e) { servidorVivo = false; }
+  pintarEstado();
 }
 
 function iniciales(nombre){
@@ -740,7 +788,26 @@ function diasLaboralesDelMes(anio, mes){
 // Empareja entrada con salida en orden. Lo que queda suelto se avisa, no se
 // inventa: una entrada sin salida no se cuenta como jornada completa ni como cero.
 function calcularDia(lista, fechaTxt){
-  const r = { fecha: fechaTxt, marcas: lista, trabajado: 0, entrada: '', salida: '', avisos: [], incompleto: false };
+  const r = { fecha: fechaTxt, marcas: lista, trabajado: 0, trabajadoNeto: 0, entrada: '', salida: '',
+              avisos: [], incompleto: false, libre: false, sinMarcar: false, saldo: 0, esperado: 0 };
+
+  // Un día marcado como libre (feriado, permiso, vacaciones, el negocio cerrado)
+  // no debe nada y no suma nada. Es la salida para los días que la tablet contaría
+  // como inasistencia sin serlo.
+  const marcaLibre = lista.filter(m => m.tipo === 'libre')[0];
+  if (marcaLibre) {
+    r.libre = true;
+    r.avisos.push(marcaLibre.nota ? 'libre: ' + marcaLibre.nota : 'día libre');
+    return r;
+  }
+  if (!lista.length) {
+    r.sinMarcar = true;
+    r.esperado = esLaboral(fechaTxt) ? minutosJornada() : 0;
+    r.saldo = (jornada.faltas && r.esperado) ? -r.esperado : 0;
+    if (r.esperado) r.avisos.push('no marcó nada');
+    return r;
+  }
+
   let abierta = null;
   lista.forEach(m => {
     if (m.tipo === 'entrada') {
@@ -770,6 +837,15 @@ function calcularDia(lista, fechaTxt){
   return r;
 }
 
+// Desde cuándo tiene sentido contar: lo que diga ⚙, o si no la primera marca que
+// exista. Antes de que el control empezara no se puede hablar de inasistencias.
+function primerDiaDelControl(){
+  if (jornada.desde) return jornada.desde;
+  let min = '';
+  marcas.forEach(m => { if (!min || m.fecha < min) min = m.fecha; });
+  return min;
+}
+
 function resumenDelMes(fecha){
   const anio = fecha.getFullYear(), mes = fecha.getMonth();
   const pre = anio + '-' + String(mes + 1).padStart(2,'0');
@@ -777,8 +853,22 @@ function resumenDelMes(fecha){
   marcas.filter(m => m.fecha.slice(0,7) === pre).forEach(m => {
     (porDia[m.fecha] = porDia[m.fecha] || []).push(m);
   });
-  const dias = Object.keys(porDia).sort().map(f =>
-    calcularDia(porDia[f].sort((a,b) => a.hora.localeCompare(b.hora)), f));
+
+  // El día de hoy no se juzga: todavía no termina. Y nada antes de que empezara el
+  // control ni después de hoy entra en la cuenta.
+  const hoy = fechaISO(new Date());
+  const inicio = primerDiaDelControl();
+  const ultimo = new Date(anio, mes + 1, 0).getDate();
+  const dias = [];
+  for (let i = 1; i <= ultimo; i++) {
+    const f = pre + '-' + String(i).padStart(2,'0');
+    const suyas = (porDia[f] || []).sort((a,b) => a.hora.localeCompare(b.hora));
+    if (!suyas.length) {
+      if (!inicio || f < inicio || f >= hoy) continue;   // fuera del control, o hoy/futuro
+      if (!esLaboral(f)) continue;                       // domingo sin marcas no es noticia
+    }
+    dias.push(calcularDia(suyas, f));
+  }
 
   const jor = minutosJornada();
   const laborales = diasLaboralesDelMes(anio, mes);
@@ -786,11 +876,13 @@ function resumenDelMes(fecha){
   const sueldo = Number(jornada.sueldo) || 0;
   const valorMinuto = minutosDelMes ? sueldo / minutosDelMes : 0;
 
-  let extra = 0, falta = 0, trabajado = 0, esperado = 0, incompletos = 0;
+  let extra = 0, falta = 0, trabajado = 0, esperado = 0, incompletos = 0, ausencias = 0, libres = 0;
   dias.forEach(d => {
+    if (d.libre) { libres++; return; }
     // Un día a medio marcar no entra en ninguna suma: si contara sus horas
     // esperadas sin las trabajadas, aparecería como si el tipo hubiera faltado.
     if (d.incompleto) { incompletos++; return; }
+    if (d.sinMarcar && d.esperado) ausencias++;
     trabajado += d.trabajadoNeto;
     esperado += d.esperado;
     if (d.saldo > 0) extra += d.saldo; else falta += -d.saldo;
@@ -800,7 +892,7 @@ function resumenDelMes(fecha){
   const plataDesc = falta * valorMinuto;
 
   return { anio, mes, dias, jor, laborales, minutosDelMes, sueldo, valorMinuto,
-           extra, falta, saldo: extra - falta, trabajado, esperado, incompletos,
+           extra, falta, saldo: extra - falta, trabajado, esperado, incompletos, ausencias, libres,
            plataExtra, plataDesc, plataNeta: plataExtra - plataDesc,
            total: sueldo + plataExtra - plataDesc };
 }
@@ -830,6 +922,8 @@ function pintarResumen(){
 
   const av = $('resumen-avisos');
   const textos = [];
+  if (r.ausencias) textos.push('<b>' + r.ausencias + ' día(s) de trabajo sin ninguna marca.</b> Se están contando como inasistencia, a ' +
+    fmtDur(r.jor) + ' cada uno. Si alguno fue feriado, permiso o el negocio cerrado, márcalo como libre con el botón de esa fila.');
   if (r.incompletos) textos.push('<b>' + r.incompletos + ' día(s) con entrada y sin salida.</b> Esos días no suman ni restan hasta que se arreglen.');
   if (!r.laborales) textos.push('<b>No hay días de trabajo marcados en ⚙.</b> Sin eso no se puede saber cuánto vale un minuto.');
   av.innerHTML = textos.join('<br><br>');
@@ -846,9 +940,9 @@ function pintarResumen(){
     c[0].innerHTML = '<b>' + DIAS_CORTO[dd.getDay()] + ' ' + dd.getDate() + '</b>';
     c[1].textContent = d.entrada || '–';
     c[2].textContent = d.salida || '–';
-    c[3].textContent = d.incompleto ? '–' : fmtDur(d.trabajadoNeto);
-    c[4].textContent = d.esperado ? fmtDur(d.esperado) : 'libre';
-    c[5].textContent = d.incompleto ? '–' : fmtSaldo(d.saldo);
+    c[3].textContent = (d.incompleto || d.libre) ? '–' : fmtDur(d.trabajadoNeto);
+    c[4].textContent = d.libre ? 'libre' : (d.esperado ? fmtDur(d.esperado) : 'no trabaja');
+    c[5].textContent = (d.incompleto || d.libre) ? '–' : fmtSaldo(d.saldo);
     c[5].className = d.saldo > 0 ? 'mas' : (d.saldo < 0 ? 'menos' : '');
     if (d.avisos.length) {
       const s = document.createElement('small');
@@ -857,8 +951,14 @@ function pintarResumen(){
     }
     const b = document.createElement('button');
     b.type = 'button';
-    b.textContent = diaAbierto === d.fecha ? 'Cerrar' : 'Marcas';
-    b.addEventListener('click', () => { diaAbierto = (diaAbierto === d.fecha ? null : d.fecha); pintarResumen(); });
+    if (d.sinMarcar && d.esperado) {
+      // Un día que la tablet está contando como falta: acá se corrige de un toque.
+      b.textContent = 'Marcar libre';
+      b.addEventListener('click', () => marcarLibre(d.fecha));
+    } else {
+      b.textContent = diaAbierto === d.fecha ? 'Cerrar' : 'Marcas';
+      b.addEventListener('click', () => { diaAbierto = (diaAbierto === d.fecha ? null : d.fecha); pintarResumen(); });
+    }
     c[6].appendChild(b);
     cuerpo.appendChild(tr);
 
@@ -878,6 +978,24 @@ function pintarResumen(){
       cuerpo.appendChild(det);
     }
   });
+}
+
+// Un día libre se guarda como una marca más, de tipo 'libre'. Así viaja por el mismo
+// camino que todo el resto: se respalda, se sube a la planilla y se puede deshacer
+// borrándola, sin inventar una segunda base de datos de excepciones.
+async function marcarLibre(fecha){
+  const nota = prompt('¿Por qué es libre ese día? (feriado, permiso, vacaciones, cerrado…)', 'feriado');
+  if (nota === null) return;
+  const quien = (trabajadores[0] && trabajadores[0].nombre) || 'Trabajador 1';
+  const marca = { id: Date.now() + '-libre', nombre: quien, tipo: 'libre',
+                  nota: String(nota).slice(0,60), fecha: fecha, hora: '00:00', origen: 'ajuste' };
+  marcas.push(marca);
+  guardarMarcas();
+  pintarResumen();
+  if (servidor) {
+    try { await pedir('/marca', Object.assign({ forzado: true }, marca)); }
+    catch (e) { cola.push(Object.assign({ forzado: true }, marca)); escribirCola(); }
+  }
 }
 
 function borrarMarca(m){
@@ -1033,7 +1151,14 @@ function pintarDias(){
     c.appendChild(b);
   }
 }
+function pintarFaltas(){
+  const b = $('j-faltas');
+  b.textContent = jornada.faltas ? 'SÍ, cuenta' : 'NO cuenta';
+  b.style.color = jornada.faltas ? '#7ee0ac' : 'var(--texto-2)';
+}
 function cargarJornadaEnFormulario(){
+  $('j-desde').value = jornada.desde || '';
+  pintarFaltas();
   $('j-sueldo').value = jornada.sueldo;
   $('j-entrada').value = jornada.entrada;
   $('j-salida').value = jornada.salida;
@@ -1042,6 +1167,8 @@ function cargarJornadaEnFormulario(){
   $('j-recargo').value = jornada.recargo;
   pintarDias();
 }
+$('j-faltas').addEventListener('click', () => { jornada.faltas = !jornada.faltas; pintarFaltas(); });
+
 $('btn-guardar-jornada').addEventListener('click', () => {
   const sueldo = Number($('j-sueldo').value);
   if (!(sueldo > 0)) return avisarEn('aviso-jornada', 'El sueldo tiene que ser un número mayor que cero.', false);
@@ -1053,12 +1180,17 @@ $('btn-guardar-jornada').addEventListener('click', () => {
   jornada.colacion = Math.max(0, Number($('j-colacion').value) || 0);
   jornada.tolerancia = Math.max(0, Number($('j-tolerancia').value) || 0);
   jornada.recargo = Math.max(0, Number($('j-recargo').value) || 0);
+  const desde = $('j-desde').value.trim();
+  if (desde && !/^\d{4}-\d{2}-\d{2}$/.test(desde))
+    return avisarEn('aviso-jornada', 'La fecha va como AAAA-MM-DD, por ejemplo 2026-09-09. O déjala en blanco.', false);
+  jornada.desde = desde;
   jornada.dias.sort();
   if (!jornada.dias.length) return avisarEn('aviso-jornada', 'Marca al menos un día de trabajo.', false);
   guardarJornada();
   const jor = minutosJornada();
   avisarEn('aviso-jornada', 'Guardado: ' + fmtDur(jor) + ' al día, ' +
-    jornada.dias.length + ' días a la semana.', true);
+    jornada.dias.length + ' días a la semana. Los días sin marcar ' +
+    (jornada.faltas ? 'SE cuentan' : 'NO se cuentan') + ' como inasistencia.', true);
 });
 
 /* ---------------- ajustes ---------------- */
@@ -1124,6 +1256,7 @@ guardarJornada();
 mantenerDespierta();
 traerGente();
 subirCola();
+if (servidor) traerHistorial();
 setInterval(() => { traerGente(); subirCola(); }, CONFIG.refrescoSegundos * 1000);
 </script>
 </body>
