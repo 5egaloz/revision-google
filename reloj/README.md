@@ -1,18 +1,18 @@
-# Reloj control en tablet
+# Control de horario (tablet)
 
-Registro de entrada y salida de trabajadores desde una tablet fija: toca tu nombre,
-escribes tu PIN de 4 dígitos y queda la marca.
+Página única para marcar entrada y salida y llevar la cuenta de las horas de más y
+de menos, con la plata que eso significa sobre el sueldo mensual.
 
-**En línea:** https://5egaloz.github.io/revision-google/reloj/
+**La base de datos está en la propia página**: todo se guarda en el navegador de la
+tablet (`localStorage`). No hay servidor, no hay cuenta que crear, no se manda nada
+a ninguna parte. Funciona sin internet.
 
-Se abre en **modo demostración**: los trabajadores y las marcas se guardan solo en el
-navegador de quien la abre. No manda nada a ninguna parte. Sirve para mostrarla.
+Se abre acá: <https://5egaloz.github.io/revision-google/reloj/>
 
-Para que escriba de verdad en una planilla de Google hay que pegar la URL del servidor en
-⚙ Ajustes. El código, el flujo de n8n y los pasos de instalación viven en el repo privado
-`memoria-vault`, en `sitios-vm/asistencia/`.
+Primero: ⚙ → poner el sueldo, el horario y los días de trabajo, y ponerle una clave
+a los ajustes. Después, *Ver el mes y las horas* muestra el saldo.
 
-## Lo que NO hace
+⚠️ Los datos viven en esa tablet y en ese navegador. Bajar el respaldo (⚙ → *Bajar
+respaldo*) de vez en cuando: si se borran los datos del navegador, se pierden.
 
-- **No prueba quién es la persona.** Un PIN se presta.
-- **No calcula sueldos ni horas extra.** Deja las marcas ordenadas en la planilla.
+Documentación larga: `sitios-vm/asistencia/LEEME.md` en el repo `memoria-vault`.

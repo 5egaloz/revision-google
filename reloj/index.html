@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<title>Registro de entrada</title>
+<title>Control de horario</title>
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#0f1620">
 <meta name="mobile-web-app-capable" content="yes">
@@ -62,7 +62,11 @@
   .tarjeta.dentro .sub{color:#7ee0ac}
   .vacio{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--texto-2);font-size:1.2rem;font-weight:600}
   footer{padding:14px 22px;border-top:1px solid var(--linea);background:var(--fondo-2);
-    display:flex;justify-content:space-between;gap:16px;font-size:1.05rem;font-weight:600;color:var(--texto-2);flex-wrap:wrap}
+    display:flex;justify-content:space-between;align-items:center;gap:16px;
+    font-size:1.05rem;font-weight:600;color:var(--texto-2);flex-wrap:wrap}
+  footer button{font-size:1.05rem;font-weight:700;color:var(--texto);
+    border:1px solid var(--linea);border-radius:999px;padding:10px 18px;background:#101a26}
+  footer button:active{background:#1d2a3a}
 
   /* ---------- teclado del PIN ---------- */
   .pin{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px}
@@ -99,13 +103,14 @@
   #listo .hora{font-size:4.6rem;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
   #listo .nota{font-size:1.15rem;font-weight:600;opacity:.9;max-width:24em}
 
-  /* ---------- ajustes ---------- */
-  #ajustes{background:var(--fondo);overflow-y:auto}
-  .caja{max-width:640px;margin:0 auto;padding:28px 22px 60px;width:100%}
+  /* ---------- ajustes y resumen ---------- */
+  #ajustes,#resumen{background:var(--fondo);overflow-y:auto}
+  .caja{max-width:820px;margin:0 auto;padding:28px 22px 60px;width:100%}
   .caja h2{font-size:1.9rem;font-weight:700;margin-bottom:6px}
   .caja p.ayuda{color:var(--texto-2);font-size:1.05rem;font-weight:600;margin-bottom:22px}
   label{display:block;font-size:1.05rem;font-weight:700;color:var(--texto-2);margin:18px 0 8px}
-  input[type=text],input[type=password]{width:100%;padding:16px;font-size:1.15rem;font-family:inherit;
+  input[type=text],input[type=password],input[type=number],input[type=time]{
+    width:100%;padding:16px;font-size:1.15rem;font-family:inherit;
     background:#101a26;border:1px solid var(--linea);border-radius:12px;color:var(--texto)}
   input:focus{outline:2px solid var(--naranja);outline-offset:-2px}
   .btn{display:block;width:100%;margin-top:16px;padding:18px;border-radius:14px;font-size:1.15rem;font-weight:700;
@@ -123,11 +128,41 @@
   .fila button{padding:12px 16px;border-radius:10px;font-size:1rem;font-weight:700;
     color:#ffa494;border:1px solid rgba(224,86,63,.6)}
   .fila button:active{background:rgba(224,86,63,.2)}
-  .par{display:flex;gap:14px}
-  .par > div{flex:1}
+  .par{display:flex;gap:14px;flex-wrap:wrap}
+  .par > div{flex:1;min-width:180px}
   .aviso{margin-top:14px;font-size:1.05rem;font-weight:700;min-height:28px}
   .aviso.bien{color:#7ee0ac}
   .aviso.mal{color:#ffa494}
+  .dias{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .dias button{padding:12px 16px;border-radius:12px;font-size:1.05rem;font-weight:700;
+    border:1px solid var(--linea);background:#101a26;color:var(--texto-2);min-width:64px}
+  .dias button.si{background:var(--verde-fuerte);color:#fff;border-color:transparent}
+
+  /* ---------- el contador ---------- */
+  .mes{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+  .mes b{font-size:1.4rem}
+  .mes button{width:56px;height:56px;border-radius:14px;border:1px solid var(--linea);
+    background:#101a26;font-size:1.4rem;font-weight:700}
+  .saldo{border-radius:20px;padding:26px;text-align:center;border:1px solid var(--linea);background:var(--fondo-2)}
+  .saldo.favor{background:linear-gradient(180deg,rgba(47,169,107,.18),var(--fondo-2));border-color:rgba(47,169,107,.6)}
+  .saldo.debe{background:linear-gradient(180deg,rgba(224,86,63,.16),var(--fondo-2));border-color:rgba(224,86,63,.6)}
+  .saldo .rotulo{font-size:1.05rem;font-weight:700;color:var(--texto-2)}
+  .saldo .grande{font-size:3.4rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums;margin:6px 0}
+  .saldo .plata{font-size:1.5rem;font-weight:700}
+  .saldo .minutos{font-size:1.05rem;font-weight:600;color:var(--texto-2)}
+  .cifras{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:18px}
+  .cifra{background:var(--fondo-2);border:1px solid var(--linea);border-radius:14px;padding:16px}
+  .cifra span{display:block;font-size:.95rem;font-weight:700;color:var(--texto-2)}
+  .cifra b{display:block;font-size:1.5rem;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
+  .tabla{width:100%;margin-top:14px;border-collapse:collapse;font-size:1rem}
+  .tabla th{text-align:left;font-size:.9rem;color:var(--texto-2);padding:10px 8px;border-bottom:1px solid var(--linea)}
+  .tabla td{padding:12px 8px;border-bottom:1px solid #22303f;font-variant-numeric:tabular-nums}
+  .tabla td.mas{color:#7ee0ac;font-weight:700}
+  .tabla td.menos{color:#ffa494;font-weight:700}
+  .tabla small{display:block;color:#ffc38a;font-size:.85rem;font-weight:700}
+  .tabla button{color:#ffa494;font-weight:700;font-size:.95rem;padding:6px 10px;
+    border:1px solid rgba(224,86,63,.5);border-radius:8px}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 </style>
 </head>
 <body>
@@ -147,6 +182,7 @@
   <div class="gente" id="gente"></div>
   <footer>
     <span id="pie-dentro">&nbsp;</span>
+    <button type="button" id="btn-resumen">Ver el mes y las horas</button>
     <span id="pie-nota">Toca tu nombre para marcar</span>
   </footer>
 </section>
@@ -182,7 +218,62 @@
   <div class="nota" id="listo-nota">&nbsp;</div>
 </section>
 
-<!-- ======================= PANTALLA 4: ajustes ======================= -->
+<!-- ======================= PANTALLA 4: el mes ======================= -->
+<section class="pantalla" id="resumen">
+  <header>
+    <div><div class="reloj" style="font-size:2rem">Horas del mes</div></div>
+    <button class="icono" id="btn-cerrar-resumen" aria-label="Cerrar">✕</button>
+  </header>
+  <div class="caja">
+    <div class="mes">
+      <button type="button" id="mes-antes" aria-label="Mes anterior">◀</button>
+      <b id="mes-nombre">&nbsp;</b>
+      <button type="button" id="mes-despues" aria-label="Mes siguiente">▶</button>
+    </div>
+
+    <div class="saldo" id="saldo-caja">
+      <div class="rotulo">Saldo del mes</div>
+      <div class="grande" id="saldo-horas">--</div>
+      <div class="plata" id="saldo-plata">&nbsp;</div>
+      <div class="minutos" id="saldo-minutos">&nbsp;</div>
+    </div>
+
+    <div class="cifras">
+      <div class="cifra"><span>Días con marcas</span><b id="c-dias">–</b></div>
+      <div class="cifra"><span>Debía trabajar esos días</span><b id="c-esperado">–</b></div>
+      <div class="cifra"><span>Trabajó</span><b id="c-trabajado">–</b></div>
+      <div class="cifra"><span>Vale un minuto</span><b id="c-minuto">–</b></div>
+      <div class="cifra"><span>Sueldo base</span><b id="c-sueldo">–</b></div>
+      <div class="cifra"><span>A pagar de más</span><b id="c-extra">–</b></div>
+      <div class="cifra"><span>A descontar</span><b id="c-descuento">–</b></div>
+      <div class="cifra"><span>Total del mes</span><b id="c-total">–</b></div>
+    </div>
+
+    <div class="dato" id="resumen-avisos" hidden></div>
+
+    <h3 class="titulo">Día por día</h3>
+    <div class="scroll">
+      <table class="tabla">
+        <thead><tr><th>Día</th><th>Entró</th><th>Salió</th><th>Trabajó</th><th>Debía</th><th>Saldo</th><th></th></tr></thead>
+        <tbody id="tabla-dias"></tbody>
+      </table>
+    </div>
+    <div class="dato" id="resumen-vacio" hidden>Todavía no hay ninguna marca en este mes.</div>
+
+    <button class="btn claro" id="btn-csv">Bajar el mes en CSV (para Excel)</button>
+    <div class="dato">
+      <b>Cómo sale el número.</b> El minuto vale el sueldo dividido por los minutos que
+      debería trabajar el mes completo. Los minutos de más se pagan con el recargo que esté
+      puesto en ⚙ (por ley en Chile las horas extra van con 50% de recargo). Los minutos de
+      menos se descuentan a valor simple.<br><br>
+      <b>Solo cuentan los días que tienen marcas.</b> Un día sin ninguna marca no se toma como
+      inasistencia: la tablet no sabe si el trabajador faltó, si el negocio estuvo cerrado o si
+      simplemente nadie tocó la pantalla. Esos días hay que verlos entre ustedes.
+    </div>
+  </div>
+</section>
+
+<!-- ======================= PANTALLA 5: ajustes ======================= -->
 <section class="pantalla" id="ajustes">
   <header>
     <div><div class="reloj" style="font-size:2rem">Ajustes</div></div>
@@ -191,30 +282,53 @@
   <div class="caja">
     <div id="ajustes-clave">
       <h2>Solo el encargado</h2>
-      <p class="ayuda">Escribe la clave del servidor para abrir los ajustes.</p>
+      <p class="ayuda">Escribe la clave para abrir los ajustes.</p>
       <input type="password" id="clave-entrar" inputmode="numeric" autocomplete="off" placeholder="Clave">
       <button class="btn" id="btn-entrar-ajustes">Entrar</button>
       <div class="error" id="ajustes-error">&nbsp;</div>
     </div>
 
     <div id="ajustes-cuerpo" hidden>
-      <h2>Ajustes de la tablet</h2>
-      <p class="ayuda">Los trabajadores y sus PIN se administran en la planilla de Google, no acá.</p>
+      <h2>El horario y el sueldo</h2>
+      <p class="ayuda">Con esto la tablet calcula sola las horas de más y las de menos.</p>
 
-      <label for="servidor">Servidor (webhook de n8n)</label>
-      <input type="text" id="servidor" autocomplete="off" spellcheck="false" placeholder="Vacío = modo demostración">
-      <button class="btn claro" id="btn-produccion">Poner el servidor de producción</button>
+      <label for="j-sueldo">Sueldo mensual (pesos)</label>
+      <input type="number" id="j-sueldo" inputmode="numeric" min="0" step="1000" placeholder="600000">
 
-      <label for="clave">Clave del servidor</label>
-      <input type="password" id="clave" autocomplete="off" placeholder="La misma que está en n8n">
+      <div class="par">
+        <div>
+          <label for="j-entrada">Hora de entrada</label>
+          <input type="time" id="j-entrada">
+        </div>
+        <div>
+          <label for="j-salida">Hora de salida</label>
+          <input type="time" id="j-salida">
+        </div>
+      </div>
 
-      <button class="btn" id="btn-guardar">Guardar y recargar</button>
-      <button class="btn claro" id="btn-pantalla">Pantalla completa</button>
-      <button class="btn claro" id="btn-refrescar">Traer la lista de nuevo</button>
+      <div class="par">
+        <div>
+          <label for="j-colacion">Colación (minutos)</label>
+          <input type="number" id="j-colacion" inputmode="numeric" min="0" step="5">
+        </div>
+        <div>
+          <label for="j-tolerancia">Tolerancia de atraso (minutos)</label>
+          <input type="number" id="j-tolerancia" inputmode="numeric" min="0" step="1">
+        </div>
+        <div>
+          <label for="j-recargo">Recargo hora extra (%)</label>
+          <input type="number" id="j-recargo" inputmode="numeric" min="0" step="5">
+        </div>
+      </div>
+
+      <label>Días que trabaja</label>
+      <div class="dias" id="j-dias"></div>
+
+      <button class="btn" id="btn-guardar-jornada">Guardar el horario</button>
+      <div class="aviso" id="aviso-jornada">&nbsp;</div>
 
       <h3 class="titulo">Trabajadores</h3>
-      <p class="ayuda">Los que aparecen en la tablet. Agregar a uno acá lo escribe en la
-        planilla al tiro; no hay que abrir Google.</p>
+      <p class="ayuda">Los que aparecen en la tablet.</p>
       <div id="lista-trabajadores"></div>
 
       <div class="par">
@@ -223,7 +337,7 @@
           <input type="text" id="nuevo-nombre" autocomplete="off" placeholder="Ej: Carolina Muñoz">
         </div>
         <div>
-          <label for="nuevo-pin">PIN de 4 dígitos (déjalo en blanco y marca sin clave)</label>
+          <label for="nuevo-pin">PIN de 4 dígitos (en blanco = marca sin clave)</label>
           <input type="text" id="nuevo-pin" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="1234">
         </div>
       </div>
@@ -232,17 +346,42 @@
       <button class="btn" id="btn-agregar">Agregar trabajador</button>
       <div class="aviso" id="aviso-trabajador">&nbsp;</div>
 
-      <h3 class="titulo">Marcas pendientes</h3>
+      <h3 class="titulo">Respaldo</h3>
+      <p class="ayuda">Los datos viven en esta tablet, en este navegador. Si se borran los datos
+        del navegador o se cambia de tablet, se pierden. Baja el respaldo de vez en cuando.</p>
+      <button class="btn claro" id="btn-respaldo">Bajar respaldo (archivo .json)</button>
+      <button class="btn claro" id="btn-restaurar">Restaurar desde un respaldo</button>
+      <input type="file" id="archivo-respaldo" accept=".json,application/json" hidden>
+      <div class="aviso" id="aviso-respaldo">&nbsp;</div>
+
+      <h3 class="titulo">Clave de estos ajustes</h3>
+      <p class="ayuda">Para que el trabajador no pueda cambiarse el horario ni borrar marcas.
+        En blanco, cualquiera entra acá.</p>
+      <input type="password" id="clave" autocomplete="off" placeholder="Sin clave">
+
+      <h3 class="titulo">Planilla de Google (opcional)</h3>
+      <p class="ayuda">En blanco, todo queda en la tablet y no se manda nada a ninguna parte.
+        Con la dirección del servidor puesta, además sube las marcas a una planilla.</p>
+      <input type="text" id="servidor" autocomplete="off" spellcheck="false" placeholder="Vacío = todo en la tablet">
+      <button class="btn claro" id="btn-produccion">Poner el servidor de la planilla</button>
+
+      <button class="btn" id="btn-guardar">Guardar y recargar</button>
+      <button class="btn claro" id="btn-pantalla">Pantalla completa</button>
+
+      <h3 class="titulo">Marcas pendientes de subir</h3>
       <div class="dato" id="dato-cola">&nbsp;</div>
-      <button class="btn peligro" id="btn-subir-cola">Subir las marcas pendientes ahora</button>
+      <button class="btn claro" id="btn-subir-cola">Subir las marcas pendientes ahora</button>
+
+      <button class="btn peligro" id="btn-borrar-todo">Borrar todas las marcas</button>
+
       <div class="dato">
-        <b>Modo demostración:</b> si el campo Servidor está vacío, la tablet inventa
-        trabajadores y no manda nada a ninguna parte. Sirve para mostrarlo sin riesgo.<br><br>
         <b>Sin PIN:</b> a quien no tenga PIN, la tablet le muestra dos botones —
         <i>Marcar entrada</i> y <i>Marcar salida</i>— y nada más. Con un solo trabajador
-        pedirle una clave no protege de nadie. Cuando sean varios, ponles PIN.<br><br>
-        <b>Si se corta el internet:</b> las marcas se guardan en la tablet y suben solas
-        cuando vuelve. No se pierde ninguna mientras no se borren los datos del navegador.
+        pedirle una clave no protege de nadie.<br><br>
+        <b>Esto no es una liquidación de sueldo.</b> Es un control entre ustedes dos: no
+        considera AFP, salud, gratificación ni feriados, y descontar plata por atrasos tiene
+        reglas en el Código del Trabajo. Sirve para conversar con un número adelante, no para
+        reemplazar a la contadora.
       </div>
     </div>
   </div>
@@ -252,13 +391,16 @@
 'use strict';
 
 /* ============================================================
-   Configuración. La URL del servidor se puede cambiar en ⚙ sin
-   tocar el código; lo que se guarda ahí manda sobre esto.
+   La base de datos vive en esta misma página (localStorage del
+   navegador de la tablet). No hace falta servidor. Si además se
+   pone la dirección de n8n en ⚙, las marcas se copian a la
+   planilla de Google, pero la tablet sigue funcionando sin eso.
    ============================================================ */
 const CONFIG = {
-  api: 'https://n8n.146-181-46-2.sslip.io/webhook/asistencia',
-  refrescoSegundos: 60,     // cada cuánto se vuelve a preguntar quién está adentro
-  segundosConfirmacion: 5,  // cuánto queda la pantalla verde/naranja antes de volver
+  api: '',                                                        // vacío = todo local
+  apiProduccion: 'https://n8n.146-181-46-2.sslip.io/webhook/asistencia',
+  refrescoSegundos: 60,
+  segundosConfirmacion: 5,
   largoPin: 4
 };
 
@@ -266,27 +408,53 @@ const LS = {
   servidor: 'asistencia.servidor',
   clave: 'asistencia.clave',
   cola: 'asistencia.cola',
-  demo: 'asistencia.demo'      // los trabajadores inventados del modo demostración
+  trabajadores: 'asistencia.trabajadores',
+  marcas: 'asistencia.marcas',
+  jornada: 'asistencia.jornada'
+};
+
+const JORNADA_BASE = {
+  sueldo: 600000,
+  entrada: '09:00',
+  salida: '18:00',
+  colacion: 60,
+  tolerancia: 5,
+  recargo: 50,
+  dias: [1,2,3,4,5]      // 0 domingo … 6 sábado
 };
 
 const $ = (id) => document.getElementById(id);
 const guardado = (k, d) => { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } };
 const anotar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const leerJSON = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v === null ? d : v; } catch (e) { return d; } };
 
 let servidor = guardado(LS.servidor, CONFIG.api).trim();
 let clave = guardado(LS.clave, '');
-let gente = [];            // [{nombre, cargo, dentro, desde}]
-let elegido = null;        // el trabajador que está marcando
+let trabajadores = leerJSON(LS.trabajadores, null) || [{ nombre:'Trabajador 1', cargo:'', pin:'' }];
+let marcas = leerJSON(LS.marcas, []);
+let jornada = Object.assign({}, JORNADA_BASE, leerJSON(LS.jornada, {}));
+let gente = [];            // lo mismo que trabajadores, con dentro/desde calculados
+let elegido = null;
 let pin = '';
-let cola = leerCola();     // marcas que no alcanzaron a subir
+let cola = leerJSON(LS.cola, []);
 let temporizador = null;
 let subiendo = false;
-let servidorVivo = null;   // null = todavía no se sabe; false = no contesta
+let servidorVivo = null;
+let mesVisto = new Date();
+let diaAbierto = null;
+
+function guardarTrabajadores(){ anotar(LS.trabajadores, JSON.stringify(trabajadores)); }
+function guardarMarcas(){ anotar(LS.marcas, JSON.stringify(marcas)); }
+function guardarJornada(){ anotar(LS.jornada, JSON.stringify(jornada)); }
 
 /* ---------------- reloj ---------------- */
 const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const DIAS_CORTO = ['Do','Lu','Ma','Mi','Ju','Vi','Sá'];
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 function hhmm(d){ return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
+function fechaISO(d){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
 function pintarReloj(){
   const d = new Date();
   $('reloj').textContent = hhmm(d);
@@ -303,31 +471,26 @@ function mostrar(cual){
   $(cual).classList.add('activa');
 }
 
-/* ---------------- la cola de marcas sin subir ---------------- */
-function leerCola(){
-  try { return JSON.parse(localStorage.getItem(LS.cola) || '[]'); } catch (e) { return []; }
-}
-function escribirCola(){
-  anotar(LS.cola, JSON.stringify(cola));
-  pintarEstado();
-}
+/* ---------------- estado de arriba ---------------- */
+function escribirCola(){ anotar(LS.cola, JSON.stringify(cola)); pintarEstado(); }
 function pintarEstado(){
   const e = $('estado');
-  if (!servidor) { e.textContent = 'Modo demostración'; e.className = 'pastilla aviso'; }
-  else if (servidorVivo === false) { e.textContent = 'Sin servidor'; e.className = 'pastilla malo'; }
-  else if (cola.length) { e.textContent = cola.length + ' por subir'; e.className = 'pastilla malo'; }
+  if (!servidor) { e.textContent = 'Guardando en la tablet'; e.className = 'pastilla'; }
+  else if (servidorVivo === false) { e.textContent = 'Sin planilla (guardado acá)'; e.className = 'pastilla aviso'; }
+  else if (cola.length) { e.textContent = cola.length + ' por subir'; e.className = 'pastilla aviso'; }
   else if (!navigator.onLine) { e.textContent = 'Sin internet'; e.className = 'pastilla aviso'; }
   else { e.textContent = 'Conectado'; e.className = 'pastilla'; }
   const dc = $('dato-cola');
-  if (dc) dc.innerHTML = cola.length
-    ? '<b>' + cola.length + ' marca(s)</b> esperando subir. La más vieja: ' + cola[0].hora + ' del ' + cola[0].fecha + '.'
-    : 'No hay marcas pendientes. Todo lo marcado está en la planilla.';
+  if (dc) dc.innerHTML = !servidor
+    ? 'No hay planilla configurada: nada que subir. Todo está guardado en la tablet.'
+    : (cola.length
+      ? '<b>' + cola.length + ' marca(s)</b> esperando subir. La más vieja: ' + cola[0].hora + ' del ' + cola[0].fecha + '.'
+      : 'No hay marcas pendientes.');
 }
 
-/* ---------------- hablarle al servidor ---------------- */
-// Todo va por POST, incluso pedir la lista: la clave viaja en el cuerpo y no en
-// la URL. Una clave en la URL queda escrita en los logs de n8n y de cualquier
-// proxy del camino, y ahí ya no se puede borrar.
+/* ---------------- hablarle al servidor (opcional) ---------------- */
+// Todo va por POST: la clave viaja en el cuerpo y no en la URL, que queda
+// escrita en los logs de n8n y de cualquier proxy del camino.
 async function pedir(ruta, cuerpo){
   const url = servidor.replace(/\/+$/,'') + ruta;
   const r = await fetch(url, {
@@ -340,48 +503,29 @@ async function pedir(ruta, cuerpo){
 }
 
 /* ---------------- la lista de gente ---------------- */
-// Un solo trabajador y sin PIN: así se ve un negocio chico el primer día.
-// Con el PIN en blanco la tablet no pide teclado, muestra los dos botones y listo.
-const DEMO = [
-  { nombre:'Trabajador 1', cargo:'', pin:'' }
-];
-
-async function traerGente(){
-  if (!servidor) {
-    if (!gente.length) {
-      let guardados = null;
-      try { guardados = JSON.parse(localStorage.getItem(LS.demo) || 'null'); } catch (e) {}
-      gente = (guardados && guardados.length ? guardados : DEMO)
-        .map(p => Object.assign({ dentro:false, desde:'' }, p));
-    }
-    pintarGente();
-    return;
-  }
-  try {
-    const d = await pedir('/gente', {});
-    if (!Array.isArray(d.gente)) throw new Error('Respuesta rara del servidor');
-    gente = d.gente;
-    servidorVivo = true;
-    aplicarCola();
-    pintarGente();
-  } catch (e) {
-    // sin conexión se sigue trabajando con la última lista que se alcanzó a ver
-    servidorVivo = false;
-    pintarEstado();
-    if (!gente.length) {
-      $('gente').innerHTML = '<div class="vacio"><b>No hay conexión con el servidor.</b><br><br>' +
-        'La tablet no puede traer la lista de trabajadores, así que nadie puede marcar.<br>' +
-        'Revisa el internet del local; si el internet está bien, revisa el servidor en ⚙.</div>';
-    }
-  }
+function marcasDe(nombre, fecha){
+  return marcas.filter(m => m.nombre === nombre && m.fecha === fecha)
+               .sort((a,b) => a.hora.localeCompare(b.hora));
+}
+function estadoHoy(nombre){
+  const hoy = marcasDe(nombre, fechaISO(new Date()));
+  if (!hoy.length) return { dentro:false, desde:'' };
+  const u = hoy[hoy.length-1];
+  return { dentro: u.tipo === 'entrada', desde: u.hora };
+}
+function armarGente(){
+  gente = trabajadores.map(p => Object.assign({}, p, estadoHoy(p.nombre)));
 }
 
-// las marcas que están en la cola todavía no las sabe el servidor: se reflejan igual
-function aplicarCola(){
-  cola.forEach(m => {
-    const p = gente.find(g => g.nombre === m.nombre);
-    if (p) { p.dentro = (m.tipo === 'entrada'); p.desde = m.hora; }
-  });
+async function traerGente(){
+  armarGente();
+  pintarGente();
+  if (!servidor) return;
+  try {
+    const d = await pedir('/gente', {});
+    if (Array.isArray(d.gente)) servidorVivo = true;
+    pintarEstado();
+  } catch (e) { servidorVivo = false; pintarEstado(); }
 }
 
 function iniciales(nombre){
@@ -391,7 +535,7 @@ function iniciales(nombre){
 function pintarGente(){
   pintarEstado();
   const cont = $('gente');
-  if (!gente.length) { cont.innerHTML = '<div class="vacio">No hay trabajadores cargados todavía.</div>'; return; }
+  if (!gente.length) { cont.innerHTML = '<div class="vacio">No hay trabajadores cargados todavía. Agrégalos en ⚙.</div>'; return; }
   cont.innerHTML = '';
   gente.forEach(p => {
     const b = document.createElement('button');
@@ -411,23 +555,21 @@ function pintarGente(){
 }
 
 /* ---------------- el PIN ---------------- */
-// Quien no tiene PIN en la planilla marca con dos botones grandes y nada mas.
-// Es lo que sirve cuando hay un solo trabajador: pedirle una clave a la unica
-// persona del local no protege de nadie, solo estorba.
+// Quien no tiene PIN marca con dos botones grandes y nada más: pedirle una clave
+// a la única persona del local no protege de nadie, solo estorba.
 function sinPin(p){ return !String(p.pin || '').trim(); }
 
 function abrirPin(p){
   elegido = p; pin = '';
   $('pin-nombre').textContent = p.nombre;
   const esEntrada = !p.dentro;
-  $('pin-error').textContent = ' ';
+  $('pin-error').textContent = ' ';
 
   if (sinPin(p)) {
     $('pin-accion').textContent = p.dentro
       ? 'Está adentro desde las ' + (p.desde || '--:--')
       : 'Todavía no marca entrada hoy';
     $('pin-accion').className = 'accion ' + (esEntrada ? 'entrada' : 'salida');
-    // Los dos botones quedan siempre disponibles; el que corresponde va encendido.
     $('btn-entrada').className = 'botonazo ' + (esEntrada ? 'entrada' : 'apagado');
     $('btn-salida').className = 'botonazo ' + (esEntrada ? 'apagado' : 'salida');
     $('botonazos').hidden = false;
@@ -485,43 +627,38 @@ function falla(msg){
 }
 
 /* ---------------- marcar ---------------- */
-// tipoPedido llega solo cuando la persona apretó uno de los dos botones. Con PIN,
-// el tipo lo decide el servidor mirando la última marca del día.
+// La marca se guarda SIEMPRE en la tablet primero. Recién después se intenta
+// copiar a la planilla, si es que hay planilla. Así una caída del internet no
+// pierde nada ni cambia lo que ve la persona.
 async function marcar(tipoPedido){
   const p = elegido, elPin = pin;
+  if (!sinPin(p) && String(p.pin) !== elPin) return falla('Ese PIN no es. Prueba de nuevo.');
   const ahora = new Date();
   const marca = {
+    id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
     nombre: p.nombre,
-    pin: elPin,
     tipo: tipoPedido || (p.dentro ? 'salida' : 'entrada'),
     forzado: !!tipoPedido,
-    fecha: ahora.toISOString().slice(0,10),
+    fecha: fechaISO(ahora),
     hora: hhmm(ahora),
     origen: 'tablet'
   };
+  marcas.push(marca);
+  guardarMarcas();
+  armarGente();
+  pintarGente();
+  confirmar(p.nombre, marca.tipo, marca.hora, '');
 
-  if (!servidor) {                                   // modo demostración
-    if (!sinPin(p) && String(p.pin) !== elPin) return falla('Ese PIN no es. Prueba de nuevo.');
-    p.dentro = (marca.tipo === 'entrada'); p.desde = marca.hora;
-    pintarGente();
-    return confirmar(p.nombre, marca.tipo, marca.hora, 'Modo demostración: esto no se guardó en ninguna parte.');
-  }
-  $('pin-error').textContent = 'Marcando…';
-  try {
-    const r = await pedir('/marca', marca);
-    if (!r.ok) return falla(r.mensaje || 'No se pudo marcar.');
-    p.dentro = (r.tipo === 'entrada'); p.desde = r.hora || marca.hora;
-    pintarGente();
-    confirmar(p.nombre, r.tipo, r.hora || marca.hora, '');
-  } catch (e) {
-    // Sin internet no se puede validar el PIN: se guarda igual y el servidor
-    // decide después. Es preferible una marca por revisar que una marca perdida.
-    cola.push(marca);
-    escribirCola();
-    p.dentro = (marca.tipo === 'entrada'); p.desde = marca.hora;
-    pintarGente();
-    confirmar(p.nombre, marca.tipo, marca.hora,
-      'Sin internet: quedó guardada en la tablet y sube sola cuando vuelva.');
+  if (servidor) {
+    try {
+      await pedir('/marca', Object.assign({ pin: elPin }, marca));
+      servidorVivo = true;
+    } catch (e) {
+      cola.push(Object.assign({ pin: elPin }, marca));
+      escribirCola();
+      servidorVivo = false;
+    }
+    pintarEstado();
   }
 }
 
@@ -546,7 +683,7 @@ async function subirCola(){
     while (cola.length) {
       const m = Object.assign({}, cola[0], { origen: 'pendiente' });
       const r = await pedir('/marca', m);
-      if (!r.ok && r.motivo !== 'repetida') break;  // PIN malo: se deja para revisar a mano
+      if (!r.ok && r.motivo !== 'repetida') break;
       cola.shift();
       escribirCola();
     }
@@ -557,102 +694,388 @@ async function subirCola(){
 window.addEventListener('online', () => { subirCola(); traerGente(); });
 window.addEventListener('offline', pintarEstado);
 
+/* ============================================================
+   EL CONTADOR DE MINUTOS
+   Todo se calcula sobre las marcas guardadas: no se guarda ningún
+   total. Si se corrige una marca, el número del mes cambia solo.
+   ============================================================ */
+function minDe(hhmmTxt){
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(hhmmTxt || '').trim());
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null;
+}
+function minutosJornada(){
+  const e = minDe(jornada.entrada), s = minDe(jornada.salida);
+  if (e === null || s === null) return 0;
+  let bruto = s - e;
+  if (bruto <= 0) bruto += 24 * 60;                 // turno que cruza la medianoche
+  return Math.max(0, bruto - (Number(jornada.colacion) || 0));
+}
+function fmtDur(min){
+  const m = Math.round(Math.abs(min));
+  const h = Math.floor(m / 60), r = m % 60;
+  if (!h) return r + ' min';
+  return h + ' h' + (r ? ' ' + r + ' min' : '');
+}
+function fmtSaldo(min){
+  if (Math.round(min) === 0) return 'Al día';
+  return (min > 0 ? '+' : '−') + fmtDur(min);
+}
+function pesos(n){
+  const v = Math.round(n);
+  return (v < 0 ? '−$' : '$') + Math.abs(v).toLocaleString('es-CL');
+}
+function esLaboral(fechaTxt){
+  const d = new Date(fechaTxt + 'T12:00:00');
+  return jornada.dias.indexOf(d.getDay()) !== -1;
+}
+function diasLaboralesDelMes(anio, mes){
+  let n = 0;
+  const ultimo = new Date(anio, mes + 1, 0).getDate();
+  for (let i = 1; i <= ultimo; i++) {
+    if (jornada.dias.indexOf(new Date(anio, mes, i).getDay()) !== -1) n++;
+  }
+  return n;
+}
+
+// Empareja entrada con salida en orden. Lo que queda suelto se avisa, no se
+// inventa: una entrada sin salida no se cuenta como jornada completa ni como cero.
+function calcularDia(lista, fechaTxt){
+  const r = { fecha: fechaTxt, marcas: lista, trabajado: 0, entrada: '', salida: '', avisos: [], incompleto: false };
+  let abierta = null;
+  lista.forEach(m => {
+    if (m.tipo === 'entrada') {
+      if (abierta !== null) r.avisos.push('dos entradas seguidas a las ' + m.hora);
+      else { abierta = minDe(m.hora); if (!r.entrada) r.entrada = m.hora; }
+    } else {
+      if (abierta === null) r.avisos.push('salida sin entrada a las ' + m.hora);
+      else {
+        let fin = minDe(m.hora);
+        if (fin < abierta) fin += 24 * 60;
+        r.trabajado += fin - abierta;
+        abierta = null;
+        r.salida = m.hora;
+      }
+    }
+  });
+  if (abierta !== null) { r.incompleto = true; r.avisos.push('entró y no marcó la salida'); }
+
+  const jor = minutosJornada();
+  const colacion = Number(jornada.colacion) || 0;
+  // Lo marcado incluye la colación: se descuenta una vez si el día da para eso.
+  r.trabajadoNeto = Math.max(0, r.trabajado - (r.trabajado > colacion ? colacion : 0));
+  r.esperado = esLaboral(fechaTxt) ? jor : 0;
+  r.saldo = r.incompleto ? 0 : r.trabajadoNeto - r.esperado;
+  const tol = Number(jornada.tolerancia) || 0;
+  if (r.saldo < 0 && -r.saldo <= tol) r.saldo = 0;   // tolerancia de atraso
+  return r;
+}
+
+function resumenDelMes(fecha){
+  const anio = fecha.getFullYear(), mes = fecha.getMonth();
+  const pre = anio + '-' + String(mes + 1).padStart(2,'0');
+  const porDia = {};
+  marcas.filter(m => m.fecha.slice(0,7) === pre).forEach(m => {
+    (porDia[m.fecha] = porDia[m.fecha] || []).push(m);
+  });
+  const dias = Object.keys(porDia).sort().map(f =>
+    calcularDia(porDia[f].sort((a,b) => a.hora.localeCompare(b.hora)), f));
+
+  const jor = minutosJornada();
+  const laborales = diasLaboralesDelMes(anio, mes);
+  const minutosDelMes = jor * laborales;
+  const sueldo = Number(jornada.sueldo) || 0;
+  const valorMinuto = minutosDelMes ? sueldo / minutosDelMes : 0;
+
+  let extra = 0, falta = 0, trabajado = 0, esperado = 0, incompletos = 0;
+  dias.forEach(d => {
+    // Un día a medio marcar no entra en ninguna suma: si contara sus horas
+    // esperadas sin las trabajadas, aparecería como si el tipo hubiera faltado.
+    if (d.incompleto) { incompletos++; return; }
+    trabajado += d.trabajadoNeto;
+    esperado += d.esperado;
+    if (d.saldo > 0) extra += d.saldo; else falta += -d.saldo;
+  });
+  const recargo = 1 + (Number(jornada.recargo) || 0) / 100;
+  const plataExtra = extra * valorMinuto * recargo;
+  const plataDesc = falta * valorMinuto;
+
+  return { anio, mes, dias, jor, laborales, minutosDelMes, sueldo, valorMinuto,
+           extra, falta, saldo: extra - falta, trabajado, esperado, incompletos,
+           plataExtra, plataDesc, plataNeta: plataExtra - plataDesc,
+           total: sueldo + plataExtra - plataDesc };
+}
+
+function pintarResumen(){
+  const r = resumenDelMes(mesVisto);
+  $('mes-nombre').textContent = MESES[r.mes][0].toUpperCase() + MESES[r.mes].slice(1) + ' ' + r.anio;
+
+  const caja = $('saldo-caja');
+  caja.className = 'saldo' + (Math.round(r.saldo) > 0 ? ' favor' : (Math.round(r.saldo) < 0 ? ' debe' : ''));
+  $('saldo-horas').textContent = fmtSaldo(r.saldo);
+  $('saldo-plata').textContent = Math.round(r.saldo) === 0
+    ? 'Ni de más ni de menos'
+    : (r.saldo > 0 ? 'Hay que pagarle ' + pesos(r.plataNeta) + ' de más'
+                   : 'Habría que descontarle ' + pesos(-r.plataNeta));
+  $('saldo-minutos').textContent = Math.round(r.saldo) + ' minutos en total  ·  ' +
+    Math.round(r.extra) + ' de más y ' + Math.round(r.falta) + ' de menos';
+
+  $('c-dias').textContent = r.dias.length;
+  $('c-esperado').textContent = fmtDur(r.esperado);
+  $('c-trabajado').textContent = fmtDur(r.trabajado);
+  $('c-minuto').textContent = pesos(r.valorMinuto);
+  $('c-sueldo').textContent = pesos(r.sueldo);
+  $('c-extra').textContent = pesos(r.plataExtra);
+  $('c-descuento').textContent = pesos(-r.plataDesc);
+  $('c-total').textContent = pesos(r.total);
+
+  const av = $('resumen-avisos');
+  const textos = [];
+  if (r.incompletos) textos.push('<b>' + r.incompletos + ' día(s) con entrada y sin salida.</b> Esos días no suman ni restan hasta que se arreglen.');
+  if (!r.laborales) textos.push('<b>No hay días de trabajo marcados en ⚙.</b> Sin eso no se puede saber cuánto vale un minuto.');
+  av.innerHTML = textos.join('<br><br>');
+  av.hidden = !textos.length;
+
+  $('resumen-vacio').hidden = !!r.dias.length;
+  const cuerpo = $('tabla-dias');
+  cuerpo.innerHTML = '';
+  r.dias.forEach(d => {
+    const dd = new Date(d.fecha + 'T12:00:00');
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td></td><td></td><td></td><td></td><td></td><td></td><td></td>';
+    const c = tr.children;
+    c[0].innerHTML = '<b>' + DIAS_CORTO[dd.getDay()] + ' ' + dd.getDate() + '</b>';
+    c[1].textContent = d.entrada || '–';
+    c[2].textContent = d.salida || '–';
+    c[3].textContent = d.incompleto ? '–' : fmtDur(d.trabajadoNeto);
+    c[4].textContent = d.esperado ? fmtDur(d.esperado) : 'libre';
+    c[5].textContent = d.incompleto ? '–' : fmtSaldo(d.saldo);
+    c[5].className = d.saldo > 0 ? 'mas' : (d.saldo < 0 ? 'menos' : '');
+    if (d.avisos.length) {
+      const s = document.createElement('small');
+      s.textContent = d.avisos.join(' · ');
+      c[0].appendChild(s);
+    }
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = diaAbierto === d.fecha ? 'Cerrar' : 'Marcas';
+    b.addEventListener('click', () => { diaAbierto = (diaAbierto === d.fecha ? null : d.fecha); pintarResumen(); });
+    c[6].appendChild(b);
+    cuerpo.appendChild(tr);
+
+    if (diaAbierto === d.fecha) {
+      const det = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 7;
+      d.marcas.forEach(m => {
+        const f = document.createElement('div');
+        f.className = 'fila';
+        f.innerHTML = '<span class="quien"></span><button type="button">Borrar</button>';
+        f.querySelector('.quien').textContent = m.hora + '  ' + m.tipo + '  ·  ' + m.nombre;
+        f.querySelector('button').addEventListener('click', () => borrarMarca(m));
+        td.appendChild(f);
+      });
+      det.appendChild(td);
+      cuerpo.appendChild(det);
+    }
+  });
+}
+
+function borrarMarca(m){
+  if (!confirm('¿Borrar la marca de ' + m.tipo + ' de las ' + m.hora + ' del ' + m.fecha + '?')) return;
+  marcas = marcas.filter(x => (x.id ? x.id !== m.id
+    : !(x.fecha === m.fecha && x.hora === m.hora && x.nombre === m.nombre && x.tipo === m.tipo)));
+  guardarMarcas();
+  armarGente(); pintarGente(); pintarResumen();
+}
+
+$('btn-resumen').addEventListener('click', () => { mesVisto = new Date(); diaAbierto = null; pintarResumen(); mostrar('resumen'); });
+$('btn-cerrar-resumen').addEventListener('click', () => mostrar('pantalla-gente'));
+$('mes-antes').addEventListener('click', () => { mesVisto = new Date(mesVisto.getFullYear(), mesVisto.getMonth()-1, 1); diaAbierto = null; pintarResumen(); });
+$('mes-despues').addEventListener('click', () => { mesVisto = new Date(mesVisto.getFullYear(), mesVisto.getMonth()+1, 1); diaAbierto = null; pintarResumen(); });
+
+/* ---------------- bajar archivos ---------------- */
+function bajar(nombre, texto, tipo){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + texto], { type: (tipo || 'text/plain') + ';charset=utf-8' }));
+  a.download = nombre;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+
+$('btn-csv').addEventListener('click', () => {
+  const r = resumenDelMes(mesVisto);
+  const pre = r.anio + '-' + String(r.mes + 1).padStart(2,'0');
+  const lineas = ['Fecha;Dia;Entro;Salio;Trabajado (min);Debia (min);Saldo (min);Aviso'];
+  r.dias.forEach(d => {
+    const dd = new Date(d.fecha + 'T12:00:00');
+    lineas.push([d.fecha, DIAS[dd.getDay()], d.entrada || '', d.salida || '',
+      Math.round(d.trabajadoNeto), d.esperado, Math.round(d.saldo), d.avisos.join(' / ')].join(';'));
+  });
+  lineas.push('');
+  lineas.push('Saldo del mes (min);' + Math.round(r.saldo));
+  lineas.push('Sueldo base;' + Math.round(r.sueldo));
+  lineas.push('A pagar de mas;' + Math.round(r.plataExtra));
+  lineas.push('A descontar;' + Math.round(r.plataDesc));
+  lineas.push('Total del mes;' + Math.round(r.total));
+  bajar('horas-' + pre + '.csv', lineas.join('\r\n'), 'text/csv');
+});
+
+$('btn-respaldo').addEventListener('click', () => {
+  bajar('respaldo-horario-' + fechaISO(new Date()) + '.json',
+    JSON.stringify({ version:1, fecha:new Date().toISOString(), trabajadores, marcas, jornada }, null, 2),
+    'application/json');
+  avisarEn('aviso-respaldo', 'Respaldo bajado. Guárdalo en otra parte, no en la misma tablet.', true);
+});
+$('btn-restaurar').addEventListener('click', () => $('archivo-respaldo').click());
+$('archivo-respaldo').addEventListener('change', (ev) => {
+  const f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  const lector = new FileReader();
+  lector.onload = () => {
+    try {
+      const d = JSON.parse(lector.result);
+      if (!Array.isArray(d.marcas) || !Array.isArray(d.trabajadores)) throw new Error('archivo raro');
+      if (!confirm('Esto reemplaza lo que hay en la tablet por el respaldo (' + d.marcas.length + ' marcas). ¿Seguir?')) return;
+      trabajadores = d.trabajadores; marcas = d.marcas;
+      jornada = Object.assign({}, JORNADA_BASE, d.jornada || {});
+      guardarTrabajadores(); guardarMarcas(); guardarJornada();
+      armarGente(); pintarGente(); pintarTrabajadores(); cargarJornadaEnFormulario();
+      avisarEn('aviso-respaldo', 'Respaldo restaurado: ' + marcas.length + ' marcas.', true);
+    } catch (e) {
+      avisarEn('aviso-respaldo', 'Ese archivo no es un respaldo de esta página.', false);
+    }
+    ev.target.value = '';
+  };
+  lector.readAsText(f);
+});
+
 /* ---------------- trabajadores ---------------- */
-// La lista sale de la misma consulta que usa el kiosco: no hay dos verdades.
-// Dar de baja no borra la fila, le pone Activo = NO, igual que el panel del gimnasio:
-// borrar a alguien que ya marcó dejaría marcas de un trabajador que "no existe".
+// Dar de baja no borra las marcas: borrar a alguien que ya marcó dejaría horas
+// de un trabajador que "no existe" y el mes ya no cuadraría.
 function pintarTrabajadores(){
   const cont = $('lista-trabajadores');
   if (!cont) return;
   cont.innerHTML = '';
-  if (!gente.length) {
+  if (!trabajadores.length) {
     cont.innerHTML = '<div class="dato">Todavía no hay nadie cargado.</div>';
     return;
   }
-  gente.forEach(p => {
+  trabajadores.forEach(p => {
     const f = document.createElement('div');
     f.className = 'fila';
     f.innerHTML = '<span class="quien"></span><button type="button">Dar de baja</button>';
     f.querySelector('.quien').innerHTML = '<span></span><small></small>';
     f.querySelector('.quien span').textContent = p.nombre;
-    f.querySelector('.quien small').textContent = p.cargo || 'Sin cargo';
+    f.querySelector('.quien small').textContent = (p.cargo || 'Sin cargo') +
+      (sinPin(p) ? ' · sin PIN' : ' · con PIN');
     f.querySelector('button').addEventListener('click', () => darDeBaja(p));
     cont.appendChild(f);
   });
 }
 
-function avisar(texto, bien){
-  const a = $('aviso-trabajador');
+function avisarEn(id, texto, bien){
+  const a = $(id);
+  if (!a) return;
   a.textContent = texto;
   a.className = 'aviso ' + (bien ? 'bien' : 'mal');
 }
-
-function guardarDemo(){
-  try { localStorage.setItem(LS.demo, JSON.stringify(gente)); } catch (e) {}
-}
+function avisar(texto, bien){ avisarEn('aviso-trabajador', texto, bien); }
 
 async function agregarTrabajador(){
   const nombre = $('nuevo-nombre').value.trim();
   const pinNuevo = $('nuevo-pin').value.trim();
   const cargo = $('nuevo-cargo').value.trim();
   if (nombre.length < 3) return avisar('Escribe el nombre completo.', false);
-  // El PIN es opcional: en blanco, esa persona marca con los dos botones grandes.
   if (pinNuevo && !/^[0-9]{4}$/.test(pinNuevo)) return avisar('El PIN son 4 números, o déjalo en blanco.', false);
-  if (gente.some(p => p.nombre.trim().toLowerCase() === nombre.toLowerCase()))
+  if (trabajadores.some(p => p.nombre.trim().toLowerCase() === nombre.toLowerCase()))
     return avisar('Ya hay alguien con ese nombre.', false);
 
-  if (!servidor) {                                   // modo demostración
-    gente.push({ nombre, cargo, pin: pinNuevo, dentro:false, desde:'' });
-    guardarDemo(); pintarGente(); pintarTrabajadores();
-    $('nuevo-nombre').value = ''; $('nuevo-pin').value = ''; $('nuevo-cargo').value = '';
-    return avisar(nombre + ' agregado (modo demostración: no se guardó en ninguna parte).', true);
-  }
+  trabajadores.push({ nombre, cargo, pin: pinNuevo });
+  guardarTrabajadores();
+  armarGente(); pintarGente(); pintarTrabajadores();
+  $('nuevo-nombre').value = ''; $('nuevo-pin').value = ''; $('nuevo-cargo').value = '';
+  avisar(nombre + ' quedó agregado.', true);
 
-  avisar('Guardando…', true);
-  try {
-    const r = await pedir('/trabajador', { accion:'agregar', nombre, pin:pinNuevo, cargo });
-    if (!r.ok) return avisar(r.mensaje || 'No se pudo agregar.', false);
-    $('nuevo-nombre').value = ''; $('nuevo-pin').value = ''; $('nuevo-cargo').value = '';
-    avisar(nombre + ' quedó en la planilla y ya aparece en la tablet.', true);
-    await traerGente(); pintarTrabajadores();
-  } catch (e) {
-    // Sin internet NO se encola: un trabajador a medio crear es peor que uno no creado.
-    avisar('Sin conexión con el servidor. No se agregó: inténtalo cuando vuelva el internet.', false);
+  if (servidor) {
+    try { await pedir('/trabajador', { accion:'agregar', nombre, pin:pinNuevo, cargo }); }
+    catch (e) { avisar(nombre + ' quedó en la tablet, pero no se pudo copiar a la planilla.', false); }
   }
 }
 
 async function darDeBaja(p){
-  if (!confirm('¿Dar de baja a ' + p.nombre + '? Deja de aparecer en la tablet, pero sus marcas quedan guardadas.')) return;
-  if (!servidor) {
-    gente = gente.filter(g => g.nombre !== p.nombre);
-    guardarDemo(); pintarGente(); pintarTrabajadores();
-    return avisar(p.nombre + ' dado de baja (modo demostración).', true);
-  }
-  avisar('Dando de baja…', true);
-  try {
-    const r = await pedir('/trabajador', { accion:'baja', nombre: p.nombre });
-    if (!r.ok) return avisar(r.mensaje || 'No se pudo dar de baja.', false);
-    avisar(p.nombre + ' ya no aparece en la tablet. Para reactivarlo, en la planilla pon Activo = SI.', true);
-    await traerGente(); pintarTrabajadores();
-  } catch (e) {
-    avisar('Sin conexión con el servidor. No se dio de baja.', false);
+  if (!confirm('¿Dar de baja a ' + p.nombre + '? Deja de aparecer en la tablet, pero sus marcas y sus horas quedan guardadas.')) return;
+  trabajadores = trabajadores.filter(g => g.nombre !== p.nombre);
+  guardarTrabajadores();
+  armarGente(); pintarGente(); pintarTrabajadores();
+  avisar(p.nombre + ' ya no aparece en la tablet.', true);
+  if (servidor) {
+    try { await pedir('/trabajador', { accion:'baja', nombre: p.nombre }); } catch (e) {}
   }
 }
 
 $('btn-agregar').addEventListener('click', agregarTrabajador);
 
+/* ---------------- el horario ---------------- */
+function pintarDias(){
+  const c = $('j-dias');
+  c.innerHTML = '';
+  for (let d = 1; d <= 7; d++) {
+    const n = d % 7;                                  // parte el lunes, termina el domingo
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = DIAS_CORTO[n];
+    b.className = jornada.dias.indexOf(n) !== -1 ? 'si' : '';
+    b.addEventListener('click', () => {
+      const i = jornada.dias.indexOf(n);
+      if (i === -1) jornada.dias.push(n); else jornada.dias.splice(i, 1);
+      pintarDias();
+    });
+    c.appendChild(b);
+  }
+}
+function cargarJornadaEnFormulario(){
+  $('j-sueldo').value = jornada.sueldo;
+  $('j-entrada').value = jornada.entrada;
+  $('j-salida').value = jornada.salida;
+  $('j-colacion').value = jornada.colacion;
+  $('j-tolerancia').value = jornada.tolerancia;
+  $('j-recargo').value = jornada.recargo;
+  pintarDias();
+}
+$('btn-guardar-jornada').addEventListener('click', () => {
+  const sueldo = Number($('j-sueldo').value);
+  if (!(sueldo > 0)) return avisarEn('aviso-jornada', 'El sueldo tiene que ser un número mayor que cero.', false);
+  if (minDe($('j-entrada').value) === null || minDe($('j-salida').value) === null)
+    return avisarEn('aviso-jornada', 'Falta la hora de entrada o la de salida.', false);
+  jornada.sueldo = sueldo;
+  jornada.entrada = $('j-entrada').value;
+  jornada.salida = $('j-salida').value;
+  jornada.colacion = Math.max(0, Number($('j-colacion').value) || 0);
+  jornada.tolerancia = Math.max(0, Number($('j-tolerancia').value) || 0);
+  jornada.recargo = Math.max(0, Number($('j-recargo').value) || 0);
+  jornada.dias.sort();
+  if (!jornada.dias.length) return avisarEn('aviso-jornada', 'Marca al menos un día de trabajo.', false);
+  guardarJornada();
+  const jor = minutosJornada();
+  avisarEn('aviso-jornada', 'Guardado: ' + fmtDur(jor) + ' al día, ' +
+    jornada.dias.length + ' días a la semana.', true);
+});
+
 /* ---------------- ajustes ---------------- */
 $('btn-ajustes').addEventListener('click', () => {
-  const pideClave = !!clave;            // sin clave configurada no hay nada que pedir
+  const pideClave = !!clave;
   $('ajustes-clave').hidden = !pideClave;
   $('ajustes-cuerpo').hidden = pideClave;
   $('clave-entrar').value = '';
-  $('ajustes-error').textContent = ' ';
+  $('ajustes-error').textContent = ' ';
   $('servidor').value = servidor;
   $('clave').value = clave;
+  cargarJornadaEnFormulario();
   pintarEstado();
   pintarTrabajadores();
   $('aviso-trabajador').textContent = ' ';
+  $('aviso-jornada').textContent = ' ';
+  $('aviso-respaldo').textContent = ' ';
   mostrar('ajustes');
 });
 $('btn-cerrar-ajustes').addEventListener('click', () => mostrar('pantalla-gente'));
@@ -663,22 +1086,24 @@ $('btn-entrar-ajustes').addEventListener('click', () => {
     $('ajustes-error').textContent = 'Clave incorrecta.';
   }
 });
-// Un toque en vez de escribir una URL larga con el dedo en una tablet.
-$('btn-produccion').addEventListener('click', () => {
-  $('servidor').value = 'https://n8n.146-181-46-2.sslip.io/webhook/asistencia';
-  $('clave').focus();
-});
+$('btn-produccion').addEventListener('click', () => { $('servidor').value = CONFIG.apiProduccion; });
 
 $('btn-guardar').addEventListener('click', () => {
   anotar(LS.servidor, $('servidor').value.trim());
   anotar(LS.clave, $('clave').value);
   location.reload();
 });
-$('btn-refrescar').addEventListener('click', async () => { await traerGente(); pintarTrabajadores(); });
 $('btn-subir-cola').addEventListener('click', async () => { await subirCola(); pintarEstado(); });
 $('btn-pantalla').addEventListener('click', () => {
   if (document.fullscreenElement) document.exitFullscreen();
   else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+});
+$('btn-borrar-todo').addEventListener('click', () => {
+  if (!confirm('Esto borra TODAS las marcas guardadas en la tablet (' + marcas.length + '). No se puede deshacer. ¿Seguro?')) return;
+  if (!confirm('De verdad: se pierden todas las horas registradas. ¿Borrar?')) return;
+  marcas = []; guardarMarcas();
+  armarGente(); pintarGente();
+  avisarEn('aviso-respaldo', 'Marcas borradas.', false);
 });
 
 /* ---------------- que la tablet no se apague ni se vaya sola ---------------- */
@@ -690,10 +1115,12 @@ async function mantenerDespierta(){
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') { cerrojo = null; mantenerDespierta(); traerGente(); subirCola(); }
 });
-document.addEventListener('gesturestart', e => e.preventDefault());   // sin zoom con dos dedos
-document.addEventListener('contextmenu', e => e.preventDefault());    // sin menú al dejar el dedo
+document.addEventListener('gesturestart', e => e.preventDefault());
+document.addEventListener('contextmenu', e => e.preventDefault());
 
 /* ---------------- arranque ---------------- */
+guardarTrabajadores();
+guardarJornada();
 mantenerDespierta();
 traerGente();
 subirCola();
