@@ -48,7 +48,14 @@
 
   /* ---------- tarjetas de la gente ---------- */
   .gente{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:22px;
-    display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));align-content:start}
+    display:grid;gap:18px;align-content:start;justify-content:center;
+    grid-template-columns:repeat(auto-fill,minmax(260px,340px))}
+  /* Con uno o dos trabajadores, una tarjeta chica perdida en una pantalla grande
+     se ve rota. Con pocos, la tarjeta crece y se planta al medio. */
+  .gente.pocos{grid-template-columns:repeat(auto-fit,minmax(320px,440px));align-content:center}
+  .gente.pocos .tarjeta{min-height:150px;padding:28px}
+  .gente.pocos .ini{width:84px;height:84px;font-size:2rem}
+  .gente.pocos .nom{font-size:1.8rem}
   .tarjeta{background:var(--fondo-2);border:1px solid var(--linea);border-radius:20px;
     padding:22px;display:flex;align-items:center;gap:18px;text-align:left;min-height:116px;
     transition:transform .08s ease}
@@ -67,6 +74,17 @@
   footer button{font-size:1.05rem;font-weight:700;color:var(--texto);
     border:1px solid var(--linea);border-radius:999px;padding:10px 18px;background:#101a26}
   footer button:active{background:#1d2a3a}
+
+  /* ---------- pantallas anchas (un PC, no la tablet) ----------
+     Sin esto, en un monitor de 1920 el reloj queda pegado a una orilla y la
+     pastilla a la otra, con medio metro de vacío al medio: se ve corrido. */
+  @media (min-width:1200px){
+    header,footer{
+      padding-left:calc((100% - 1200px) / 2 + 22px);
+      padding-right:calc((100% - 1200px) / 2 + 22px);
+    }
+    .gente{width:100%;max-width:1200px;margin:0 auto}
+  }
 
   /* ---------- teclado del PIN ---------- */
   .pin{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px}
@@ -583,6 +601,7 @@ function iniciales(nombre){
 function pintarGente(){
   pintarEstado();
   const cont = $('gente');
+  cont.classList.toggle('pocos', gente.length > 0 && gente.length <= 2);
   if (!gente.length) { cont.innerHTML = '<div class="vacio">No hay trabajadores cargados todavía. Agrégalos en ⚙.</div>'; return; }
   cont.innerHTML = '';
   gente.forEach(p => {
